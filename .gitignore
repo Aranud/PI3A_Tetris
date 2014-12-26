@@ -7,3 +7,4 @@ ClientClassique/debug/moc_mainwindow.cpp
 *.Debug
 ClientClassique/Makefile
 *.user
+Serveur/templates/date.html
