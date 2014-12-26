@@ -1,0 +1,9 @@
+ClientClassique/debug/ClientClassique.exe
+ClientClassique/debug/main.o
+ClientClassique/debug/mainwindow.o
+ClientClassique/debug/moc_mainwindow.o
+ClientClassique/debug/moc_mainwindow.cpp
+*.Release
+*.Debug
+ClientClassique/Makefile
+*.user
