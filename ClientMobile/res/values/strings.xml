@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ClientMobile</string>
+    <string name="ButtonConnexion">New Button</string>
+    <string name="buttonTetrominoI">I</string>
+    <string name="buttonTetrominoT">T</string>
+    <string name="buttonTetrominoO">O</string>
+    <string name="buttonTetrominoJ">J</string>
+    <string name="buttonTetrominoL">L</string>
+    <string name="buttonTetrominoS">S</string>
+    <string name="buttonTetrominoZ">Z</string>
+    <string name="buttonConnexion">Connexion</string>
+    <string name="textView">Connectez vous pour choisir les pièces à envoyer</string>
+    <string name="adresseServeur">localhost:5000</string>
+    <string name="buttonConnection">Connection</string>
 </resources>
