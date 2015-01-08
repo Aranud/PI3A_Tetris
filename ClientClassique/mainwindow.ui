@@ -6,18 +6,18 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>470</width>
-    <height>465</height>
+    <width>491</width>
+    <height>467</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QTableWidget" name="qtwTetrisGrid">
+   <widget class="QTableWidget" name="qtwGrilleDeJeux">
     <property name="geometry">
      <rect>
-      <x>260</x>
+      <x>280</x>
       <y>10</y>
       <width>202</width>
       <height>402</height>
@@ -111,7 +111,7 @@
     <column/>
     <column/>
    </widget>
-   <widget class="QFrame" name="verticalFrame">
+   <widget class="QFrame" name="qvfFrameGauche">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -122,38 +122,77 @@
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
+      <layout class="QVBoxLayout" name="qvblFenetreSuperieur">
        <item>
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QLabel" name="label_4">
          <property name="text">
-          <string>PushButton</string>
+          <string>Adresse Du Serveur</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit">
+         <property name="text">
+          <string>localhost:5000</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="boutonConnection">
+         <property name="text">
+          <string>Connection</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>TextLabel</string>
+          <string>(Indique si le client est connecte)</string>
          </property>
         </widget>
        </item>
       </layout>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_4">
+      <layout class="QVBoxLayout" name="qvblFenetreInferieur">
        <item>
-        <widget class="QLabel" name="label_2">
+        <widget class="QLabel" name="labelPiecesRecu">
          <property name="text">
           <string>TextLabel</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label_3">
+        <widget class="QLabel" name="labelScore">
          <property name="text">
           <string>TextLabel</string>
          </property>
         </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QPushButton" name="boutonGauche">
+           <property name="text">
+            <string>Gauche</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="boutonBas">
+           <property name="text">
+            <string>Bas</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="boutonDroite">
+           <property name="text">
+            <string>Droite</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </item>
@@ -165,7 +204,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>470</width>
+     <width>491</width>
      <height>21</height>
     </rect>
    </property>

@@ -8,3 +8,5 @@ ClientClassique/debug/moc_mainwindow.cpp
 ClientClassique/Makefile
 *.user
 Serveur/templates/date.html
+*.o
+ClientClassique/ClientClassique/Makefile

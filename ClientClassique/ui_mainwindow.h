@@ -14,8 +14,10 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QFrame>
+#include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
@@ -31,16 +33,24 @@ QT_BEGIN_NAMESPACE
 class Ui_MainWindow
 {
 public:
+    QAction *actionTest;
+    QAction *actionNouvelle_Partie;
     QWidget *centralWidget;
-    QTableWidget *qtwTetrisGrid;
-    QFrame *verticalFrame;
+    QTableWidget *qtwGrilleDeJeux;
+    QFrame *qvfFrameGauche;
     QVBoxLayout *verticalLayout;
-    QVBoxLayout *verticalLayout_3;
-    QPushButton *pushButton;
+    QVBoxLayout *qvblFenetreSuperieur;
+    QLabel *label_4;
+    QLineEdit *lineEdit;
+    QPushButton *boutonConnection;
     QLabel *label;
-    QVBoxLayout *verticalLayout_4;
-    QLabel *label_2;
-    QLabel *label_3;
+    QVBoxLayout *qvblFenetreInferieur;
+    QLabel *labelPiecesRecu;
+    QLabel *labelScore;
+    QHBoxLayout *horizontalLayout;
+    QPushButton *boutonGauche;
+    QPushButton *boutonBas;
+    QPushButton *boutonDroite;
     QMenuBar *menuBar;
     QMenu *menuPI3A_Tetris;
     QToolBar *mainToolBar;
@@ -50,78 +60,113 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(470, 465);
+        MainWindow->resize(491, 467);
+        actionTest = new QAction(MainWindow);
+        actionTest->setObjectName(QStringLiteral("actionTest"));
+        actionNouvelle_Partie = new QAction(MainWindow);
+        actionNouvelle_Partie->setObjectName(QStringLiteral("actionNouvelle_Partie"));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
-        qtwTetrisGrid = new QTableWidget(centralWidget);
-        if (qtwTetrisGrid->columnCount() < 10)
-            qtwTetrisGrid->setColumnCount(10);
-        if (qtwTetrisGrid->rowCount() < 20)
-            qtwTetrisGrid->setRowCount(20);
-        qtwTetrisGrid->setObjectName(QStringLiteral("qtwTetrisGrid"));
-        qtwTetrisGrid->setGeometry(QRect(260, 10, 202, 402));
-        qtwTetrisGrid->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
-        qtwTetrisGrid->setAutoScroll(true);
-        qtwTetrisGrid->setProperty("showDropIndicator", QVariant(true));
-        qtwTetrisGrid->setDragDropOverwriteMode(true);
-        qtwTetrisGrid->setShowGrid(true);
-        qtwTetrisGrid->setGridStyle(Qt::SolidLine);
-        qtwTetrisGrid->setSortingEnabled(false);
-        qtwTetrisGrid->setWordWrap(true);
-        qtwTetrisGrid->setCornerButtonEnabled(true);
-        qtwTetrisGrid->setRowCount(20);
-        qtwTetrisGrid->setColumnCount(10);
-        qtwTetrisGrid->horizontalHeader()->setVisible(false);
-        qtwTetrisGrid->horizontalHeader()->setDefaultSectionSize(20);
-        qtwTetrisGrid->horizontalHeader()->setHighlightSections(true);
-        qtwTetrisGrid->horizontalHeader()->setMinimumSectionSize(20);
-        qtwTetrisGrid->verticalHeader()->setVisible(false);
-        qtwTetrisGrid->verticalHeader()->setDefaultSectionSize(20);
-        qtwTetrisGrid->verticalHeader()->setMinimumSectionSize(20);
-        qtwTetrisGrid->verticalHeader()->setProperty("showSortIndicator", QVariant(false));
-        verticalFrame = new QFrame(centralWidget);
-        verticalFrame->setObjectName(QStringLiteral("verticalFrame"));
-        verticalFrame->setGeometry(QRect(10, 10, 241, 401));
-        verticalLayout = new QVBoxLayout(verticalFrame);
+        qtwGrilleDeJeux = new QTableWidget(centralWidget);
+        if (qtwGrilleDeJeux->columnCount() < 10)
+            qtwGrilleDeJeux->setColumnCount(10);
+        if (qtwGrilleDeJeux->rowCount() < 20)
+            qtwGrilleDeJeux->setRowCount(20);
+        qtwGrilleDeJeux->setObjectName(QStringLiteral("qtwGrilleDeJeux"));
+        qtwGrilleDeJeux->setGeometry(QRect(280, 10, 202, 402));
+        qtwGrilleDeJeux->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+        qtwGrilleDeJeux->setAutoScroll(true);
+        qtwGrilleDeJeux->setProperty("showDropIndicator", QVariant(true));
+        qtwGrilleDeJeux->setDragDropOverwriteMode(true);
+        qtwGrilleDeJeux->setShowGrid(true);
+        qtwGrilleDeJeux->setGridStyle(Qt::SolidLine);
+        qtwGrilleDeJeux->setSortingEnabled(false);
+        qtwGrilleDeJeux->setWordWrap(true);
+        qtwGrilleDeJeux->setCornerButtonEnabled(true);
+        qtwGrilleDeJeux->setRowCount(20);
+        qtwGrilleDeJeux->setColumnCount(10);
+        qtwGrilleDeJeux->horizontalHeader()->setVisible(false);
+        qtwGrilleDeJeux->horizontalHeader()->setDefaultSectionSize(20);
+        qtwGrilleDeJeux->horizontalHeader()->setHighlightSections(true);
+        qtwGrilleDeJeux->horizontalHeader()->setMinimumSectionSize(20);
+        qtwGrilleDeJeux->verticalHeader()->setVisible(false);
+        qtwGrilleDeJeux->verticalHeader()->setDefaultSectionSize(20);
+        qtwGrilleDeJeux->verticalHeader()->setMinimumSectionSize(20);
+        qtwGrilleDeJeux->verticalHeader()->setProperty("showSortIndicator", QVariant(false));
+        qvfFrameGauche = new QFrame(centralWidget);
+        qvfFrameGauche->setObjectName(QStringLiteral("qvfFrameGauche"));
+        qvfFrameGauche->setGeometry(QRect(10, 10, 241, 401));
+        verticalLayout = new QVBoxLayout(qvfFrameGauche);
         verticalLayout->setSpacing(6);
         verticalLayout->setContentsMargins(11, 11, 11, 11);
         verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
-        verticalLayout_3 = new QVBoxLayout();
-        verticalLayout_3->setSpacing(6);
-        verticalLayout_3->setObjectName(QStringLiteral("verticalLayout_3"));
-        pushButton = new QPushButton(verticalFrame);
-        pushButton->setObjectName(QStringLiteral("pushButton"));
+        qvblFenetreSuperieur = new QVBoxLayout();
+        qvblFenetreSuperieur->setSpacing(6);
+        qvblFenetreSuperieur->setObjectName(QStringLiteral("qvblFenetreSuperieur"));
+        label_4 = new QLabel(qvfFrameGauche);
+        label_4->setObjectName(QStringLiteral("label_4"));
 
-        verticalLayout_3->addWidget(pushButton);
+        qvblFenetreSuperieur->addWidget(label_4);
 
-        label = new QLabel(verticalFrame);
+        lineEdit = new QLineEdit(qvfFrameGauche);
+        lineEdit->setObjectName(QStringLiteral("lineEdit"));
+
+        qvblFenetreSuperieur->addWidget(lineEdit);
+
+        boutonConnection = new QPushButton(qvfFrameGauche);
+        boutonConnection->setObjectName(QStringLiteral("boutonConnection"));
+
+        qvblFenetreSuperieur->addWidget(boutonConnection);
+
+        label = new QLabel(qvfFrameGauche);
         label->setObjectName(QStringLiteral("label"));
 
-        verticalLayout_3->addWidget(label);
+        qvblFenetreSuperieur->addWidget(label);
 
 
-        verticalLayout->addLayout(verticalLayout_3);
+        verticalLayout->addLayout(qvblFenetreSuperieur);
 
-        verticalLayout_4 = new QVBoxLayout();
-        verticalLayout_4->setSpacing(6);
-        verticalLayout_4->setObjectName(QStringLiteral("verticalLayout_4"));
-        label_2 = new QLabel(verticalFrame);
-        label_2->setObjectName(QStringLiteral("label_2"));
+        qvblFenetreInferieur = new QVBoxLayout();
+        qvblFenetreInferieur->setSpacing(6);
+        qvblFenetreInferieur->setObjectName(QStringLiteral("qvblFenetreInferieur"));
+        labelPiecesRecu = new QLabel(qvfFrameGauche);
+        labelPiecesRecu->setObjectName(QStringLiteral("labelPiecesRecu"));
 
-        verticalLayout_4->addWidget(label_2);
+        qvblFenetreInferieur->addWidget(labelPiecesRecu);
 
-        label_3 = new QLabel(verticalFrame);
-        label_3->setObjectName(QStringLiteral("label_3"));
+        labelScore = new QLabel(qvfFrameGauche);
+        labelScore->setObjectName(QStringLiteral("labelScore"));
 
-        verticalLayout_4->addWidget(label_3);
+        qvblFenetreInferieur->addWidget(labelScore);
+
+        horizontalLayout = new QHBoxLayout();
+        horizontalLayout->setSpacing(6);
+        horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
+        boutonGauche = new QPushButton(qvfFrameGauche);
+        boutonGauche->setObjectName(QStringLiteral("boutonGauche"));
+
+        horizontalLayout->addWidget(boutonGauche);
+
+        boutonBas = new QPushButton(qvfFrameGauche);
+        boutonBas->setObjectName(QStringLiteral("boutonBas"));
+
+        horizontalLayout->addWidget(boutonBas);
+
+        boutonDroite = new QPushButton(qvfFrameGauche);
+        boutonDroite->setObjectName(QStringLiteral("boutonDroite"));
+
+        horizontalLayout->addWidget(boutonDroite);
 
 
-        verticalLayout->addLayout(verticalLayout_4);
+        qvblFenetreInferieur->addLayout(horizontalLayout);
+
+
+        verticalLayout->addLayout(qvblFenetreInferieur);
 
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 470, 21));
+        menuBar->setGeometry(QRect(0, 0, 491, 21));
         menuPI3A_Tetris = new QMenu(menuBar);
         menuPI3A_Tetris->setObjectName(QStringLiteral("menuPI3A_Tetris"));
         MainWindow->setMenuBar(menuBar);
@@ -133,7 +178,9 @@ public:
         MainWindow->setStatusBar(statusBar);
 
         menuBar->addAction(menuPI3A_Tetris->menuAction());
+        menuPI3A_Tetris->addAction(actionNouvelle_Partie);
         menuPI3A_Tetris->addSeparator();
+        menuPI3A_Tetris->addAction(actionTest);
 
         retranslateUi(MainWindow);
 
@@ -143,11 +190,18 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", 0));
-        pushButton->setText(QApplication::translate("MainWindow", "PushButton", 0));
-        label->setText(QApplication::translate("MainWindow", "TextLabel", 0));
-        label_2->setText(QApplication::translate("MainWindow", "TextLabel", 0));
-        label_3->setText(QApplication::translate("MainWindow", "TextLabel", 0));
-        menuPI3A_Tetris->setTitle(QApplication::translate("MainWindow", "PI3A Tetris", 0));
+        actionTest->setText(QApplication::translate("MainWindow", "Exit", 0));
+        actionNouvelle_Partie->setText(QApplication::translate("MainWindow", "Nouvelle Partie", 0));
+        label_4->setText(QApplication::translate("MainWindow", "Adresse Du Serveur", 0));
+        lineEdit->setText(QApplication::translate("MainWindow", "localhost:5000", 0));
+        boutonConnection->setText(QApplication::translate("MainWindow", "Connection", 0));
+        label->setText(QApplication::translate("MainWindow", "(Indique si le client est connecte)", 0));
+        labelPiecesRecu->setText(QApplication::translate("MainWindow", "TextLabel", 0));
+        labelScore->setText(QApplication::translate("MainWindow", "TextLabel", 0));
+        boutonGauche->setText(QApplication::translate("MainWindow", "Gauche", 0));
+        boutonBas->setText(QApplication::translate("MainWindow", "Bas", 0));
+        boutonDroite->setText(QApplication::translate("MainWindow", "Droite", 0));
+        menuPI3A_Tetris->setTitle(QApplication::translate("MainWindow", "Menu", 0));
     } // retranslateUi
 
 };
