@@ -2,12 +2,44 @@ package com.example.ClientMobile;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import org.apache.commons.logging.Log;
+import org.apache.http.*;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MyActivity extends Activity {
+
+    private static final String USER_AGENT = "Mozilla/5.0";
+
+    private static final String TETROMINOI = "I";
+    private static final String TETROMINOT = "T";
+    private static final String TETROMINOO = "O";
+    private static final String TETROMINOJ = "J";
+    private static final String TETROMINOL = "L";
+    private static final String TETROMINOS = "S";
+    private static final String TETROMINOZ = "Z";
+
+    private Boolean connectionEtablie = false;
+    private String nomClientClassique = "";
+    private String adresse = "";
 
     private TextView zoneDeTexte;
     private Button boutonConnection;
@@ -18,6 +50,7 @@ public class MyActivity extends Activity {
     private ImageButton boutonTetrominoL;
     private ImageButton boutonTetrominoS;
     private ImageButton boutonTetrominoZ;
+    private EditText editTextAdresse;
 
     private View.OnClickListener boutonConnectionListener;
     private View.OnClickListener boutonTetrominoIListener;
@@ -27,6 +60,8 @@ public class MyActivity extends Activity {
     private View.OnClickListener boutonTetrominoLListener;
     private View.OnClickListener boutonTetrominoSListener;
     private View.OnClickListener boutonTetrominoZListener;
+
+    private boolean isConnected = false;
 
     /**
      * Called when the activity is first created.
@@ -42,6 +77,7 @@ public class MyActivity extends Activity {
     private void InitializeApp() {
 
         zoneDeTexte = (TextView) findViewById(R.id.zoneDeTexte);
+        editTextAdresse = (EditText) findViewById(R.id.editTextAdresse);
         boutonConnection = (Button) findViewById(R.id.boutonConnection);
         boutonTetrominoI = (ImageButton) findViewById(R.id.boutonTetrominoI);
         boutonTetrominoT = (ImageButton) findViewById(R.id.boutonTetrominoT);
@@ -53,7 +89,14 @@ public class MyActivity extends Activity {
 
         boutonConnectionListener = new View.OnClickListener()  {
             public void onClick(View v) {
-                Connection();
+                try {
+                    if(connectionEtablie == false)
+                        Connection();
+                    else
+                        Deconnection();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         };
         boutonConnection.setOnClickListener(boutonConnectionListener);
@@ -109,26 +152,175 @@ public class MyActivity extends Activity {
     }
 
     private void SendTetrominoI() {
+        try {
+            SendTetromino(TETROMINOI);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void SendTetrominoT() {
+        try {
+            SendTetromino(TETROMINOT);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void SendTetrominoO() {
+        try {
+            SendTetromino(TETROMINOO);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void SendTetrominoJ() {
+        try {
+            SendTetromino(TETROMINOJ);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void SendTetrominoL() {
+        try {
+            SendTetromino(TETROMINOL);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void SendTetrominoS() {
+        try {
+            SendTetromino(TETROMINOS);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void SendTetrominoZ() {
+        try {
+            SendTetromino(TETROMINOZ);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    private void Connection() {
+    private void SendTetromino(String tetromino) throws Exception{
+
+        String url = "http://" + adresse + "/envoie_piece";
+
+        HttpClient httpclient = new DefaultHttpClient();
+        HttpPost httppost = new HttpPost(url);
+
+        try {
+            // Add your data
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+            nameValuePairs.add(new BasicNameValuePair("piece", tetromino));
+            nameValuePairs.add(new BasicNameValuePair("nom_client", nomClientClassique));
+            httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+            // Execute HTTP Post Request
+            HttpResponse response = httpclient.execute(httppost);
+            StatusLine statusLine = response.getStatusLine();
+
+            if(statusLine.getStatusCode() == HttpStatus.SC_OK){
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                response.getEntity().writeTo(out);
+                out.close();
+                String responseString = out.toString();
+                System.out.println(responseString);
+                zoneDeTexte.setText(responseString);
+            } else{
+                //Closes the connection.
+                response.getEntity().getContent().close();
+                throw new IOException(statusLine.getReasonPhrase());
+            }
+        } catch (ClientProtocolException e) {
+            // TODO Auto-generated catch block
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+        }
+    }
+
+    private void Connection() throws Exception {
+
+        adresse = editTextAdresse.getText().toString();
+
+        String myurl = "http://" + adresse + "/login_client_mobile";
+        URI url = new URI(myurl);
+
+        HttpClient httpclient = new DefaultHttpClient();
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+        HttpResponse response = httpclient.execute(new HttpGet(url));
+        StatusLine statusLine = response.getStatusLine();
+
+        if(statusLine.getStatusCode() == HttpStatus.SC_OK) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            response.getEntity().writeTo(out);
+            out.close();
+            String responseString = out.toString();
+            zoneDeTexte.setText(responseString);
+            nomClientClassique = responseString;
+            connectionEtablie = true;
+            boutonConnection.setText("Deconnection");
+            editTextAdresse.setEnabled(false);
+
+        } else if(statusLine.getStatusCode() == HttpStatus.SC_NO_CONTENT) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            response.getEntity().writeTo(out);
+            out.close();
+            String responseString = out.toString();
+            zoneDeTexte.setText(responseString);
+
+        } else{
+            //Closes the connection.
+            response.getEntity().getContent().close();
+            throw new IOException(statusLine.getReasonPhrase());
+        }
+    }
+
+    private void Deconnection() {
+
+        String url = "http://" + adresse + "/logout_client_mobile";
+
+        HttpClient httpclient = new DefaultHttpClient();
+        HttpPost httppost = new HttpPost(url);
+
+        try {
+            // Add your data
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
+            nameValuePairs.add(new BasicNameValuePair("nom_client", nomClientClassique));
+            httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+            // Execute HTTP Post Request
+            HttpResponse response = httpclient.execute(httppost);
+            StatusLine statusLine = response.getStatusLine();
+
+            if(statusLine.getStatusCode() == HttpStatus.SC_OK || statusLine.getStatusCode() == HttpStatus.SC_NO_CONTENT){
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                response.getEntity().writeTo(out);
+                out.close();
+                String responseString = out.toString();
+                System.out.println(responseString);
+                zoneDeTexte.setText(responseString);
+                nomClientClassique = "";
+                connectionEtablie = false;
+                boutonConnection.setText("Connection");
+                editTextAdresse.setEnabled(true);
+                adresse = "";
+                //..more logic
+            } else{
+                //Closes the connection.
+                response.getEntity().getContent().close();
+                throw new IOException(statusLine.getReasonPhrase());
+            }
+        } catch (ClientProtocolException e) {
+            // TODO Auto-generated catch block
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+        }
     }
 }
