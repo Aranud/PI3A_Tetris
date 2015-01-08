@@ -10,3 +10,8 @@ ClientClassique/Makefile
 Serveur/templates/date.html
 *.o
 ClientClassique/ClientClassique/Makefile
+*.exe
+ClientClassique/ClientClassique/debug/moc_mainwindow.cpp
+ClientClassique/ClientClassique/ui_mainwindow.h
+ClientClassique/debug/moc_piecegetter.cpp
+ClientClassique/debug/moc_tetromino.cpp

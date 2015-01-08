@@ -54,28 +54,33 @@ def login_client_classique():
     else:
         nom = 'client' + `increment[0]`
         increment[0] += 1
-        #session['nom'] = nom
-        #if nom in session:
         ListClientClassique.append(ClientClassique(nom))
         return nom
-        #else:
-        #    return 'Vous n etes pas connecte'
 
-@app.route('/obtenir_pieces')
+@app.route('/logout_client_classique', methods=['POST'])
+def logout_client_classique():
+    if request.method == 'POST':
+        nom_client = request.form['nom_client']
+        for clientClassique in ListClientClassique:
+            if clientClassique.nom == nom_client:
+                ListClientClassique.remove(clientClassique)
+                return 'Deconnecte', 200
+        return 'Client Classique inconnu, Deconnecte', 204
+    else:
+        return 'Erreur : La requete doit etre de type GET', 405
+
+@app.route('/obtenir_pieces', methods=['POST'])
 def obtenir_pieces():
     if request.method == 'POST':
         for clientClassique in ListClientClassique:
-            if clientClassique.nom == nom:
-                return clientClassique.fifoPieces.get(), 200
+            if clientClassique.nom == request.form['nom_client']:
+                if clientClassique.fifoPieces.empty() == False:
+                    return clientClassique.fifoPieces.get(), 200
+                else:
+                    return ""
         return 'Client Classique inconnue', 204    
     else:
         return 'Erreur : La requete doit etre de type POST', 405
-        
-@app.route('/logout_client_classique')
-def logout_client_classique():
-    # remove the username from the session if it's there
-    session.pop('username', None)
-    return redirect(url_for('index'))
 
 ######################
 
