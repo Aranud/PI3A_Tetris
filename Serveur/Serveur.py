@@ -14,11 +14,12 @@ app.secret_key = os.urandom(24)
 #################################################################
 FIFOClientClassique = Queue()
 ListClientClassique = []
+increment = [0]
 
 class ClientClassique:
     def __init__(self, nom):
         self.nom = nom
-        self.controleur = false
+        self.controleur = False
         self.fifoPieces = Queue()
 
 ##########
@@ -41,29 +42,34 @@ def index():
 
 ########################
 
-@app.route('/login_client_classique', methods=['POST'])
+@app.route('/login_client_classique', methods=['GET', 'POST'])
 def login_client_classique():
-    if request.method == 'POST':
+    if request.method == 'POST':                
         session['nom'] = request.form['nom']
         if 'nom' in session:
-            #FIFOClientClassique.put(ClientClassique('username'))        #Ajoute le nouveau clientclassique dans la FIFO
             ListClientClassique.append(ClientClassique('nom'))
             return 'Connecte comme -->%s' % escape(session['nom'])
         else:
             return 'Vous n etes pas connecte'
-        
-    return 'Erreur : La requete doit etre de type POST'
+    else:
+        nom = 'client' + `increment[0]`
+        increment[0] += 1
+        #session['nom'] = nom
+        #if nom in session:
+        ListClientClassique.append(ClientClassique(nom))
+        return nom
+        #else:
+        #    return 'Vous n etes pas connecte'
 
 @app.route('/obtenir_pieces')
 def obtenir_pieces():
     if request.method == 'POST':
-        if 'username' in session:
-            for clientClassique in ListClientClassique:
-                if clientClassique.nom == nom:
-                    return clientClassique.fifoPieces.get()
-        return 'Client Classique non trouve'    
+        for clientClassique in ListClientClassique:
+            if clientClassique.nom == nom:
+                return clientClassique.fifoPieces.get(), 200
+        return 'Client Classique inconnue', 204    
     else:
-        return 'Error'
+        return 'Erreur : La requete doit etre de type POST', 405
         
 @app.route('/logout_client_classique')
 def logout_client_classique():
@@ -77,34 +83,40 @@ def logout_client_classique():
 def login_client_mobile():
     if request.method == 'GET':
         if len(ListClientClassique) > 0:
-            for index, clientClassique in ListClientClassique:
-                if clientClassique.controleur == false:
-                    ListClientClassique[index].controleur = true
-                    return clientClassique.name
-            return 'Aucun'
+            for clientClassique in ListClientClassique:
+                if clientClassique.controleur == False:
+                    ListClientClassique[ListClientClassique.index(clientClassique)].controleur = True
+                    return clientClassique.nom, 200
+            return 'Tout les clients sont occupes', 204
         else:
-            return 'Vide'
+            return 'Aucun client present', 204
     else:
-        return 'Erreur : La requete doit etre de type GET'
+        return 'Erreur : La requete doit etre de type GET', 405
     
-@app.route('/logout_client_mobile')
+@app.route('/logout_client_mobile', methods=['POST'])
 def logout_client_mobile():
-    # remove the username from the session if it's there
-    session.pop('username', None)
-    return 'You are logged out'
+    if request.method == 'POST':
+        nom_client = request.form['nom_client']
+        for clientClassique in ListClientClassique:
+            if clientClassique.nom == nom_client:
+                ListClientClassique[ListClientClassique.index(clientClassique)].controleur = False
+                return 'Deconnecte', 200
+        return 'Client Classique inconnu, Deconnecte', 204
+    else:
+        return 'Erreur : La requete doit etre de type GET', 405
 
-@app.route('/envoie_piece')
+@app.route('/envoie_piece', methods=['POST'])
 def envoie_piece():
     if request.method == 'POST':
         piece = request.form['piece']
-        nom = request.form['nom']
+        nom_client = request.form['nom_client']
         for clientClassique in ListClientClassique:
-            if clientClassique.nom == nom:
-                clientClassique.fifoPieces.append(piece)
-                return 'OK'
-        return 'Client Classique non trouve'        
+            if clientClassique.nom == nom_client:
+                clientClassique.fifoPieces.put(piece)
+                return 'OK Tetromino : ' + piece, 200
+        return 'Client Classique non trouve', 400        
     else:
-        return 'Erreur : La requete doit etre de type POST'
+        return 'Erreur : La requete doit etre de type POST', 405
 
 ######################
 
