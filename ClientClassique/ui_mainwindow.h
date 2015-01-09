@@ -172,11 +172,13 @@ public:
 
         boutonRotDroite = new QPushButton(qvfFrameGauche);
         boutonRotDroite->setObjectName(QStringLiteral("boutonRotDroite"));
+        boutonRotDroite->setEnabled(false);
 
         gridLayout->addWidget(boutonRotDroite, 1, 2, 1, 1);
 
         boutonRotGauche = new QPushButton(qvfFrameGauche);
         boutonRotGauche->setObjectName(QStringLiteral("boutonRotGauche"));
+        boutonRotGauche->setEnabled(false);
 
         gridLayout->addWidget(boutonRotGauche, 1, 0, 1, 1);
 

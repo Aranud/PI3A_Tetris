@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     m_pqnamManagerConnection = new QNetworkAccessManager(this);
     connect(m_pqnamManagerConnection, SIGNAL(finished(QNetworkReply*)), this, SLOT(slotOnConnection(QNetworkReply*)));
 
+    // L'animation est place dans un thread
     m_pAnimation = new Animation(ui, 0);
     m_pthThreadAnimation = new QThread(this);
     m_pAnimation->moveToThread(m_pthThreadAnimation);
@@ -19,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     m_pPieceGetter = NULL;
     m_pthThreadTimer = NULL;
 
+    // Initialise la grille de jeux
     for(int iXIncrement = 0; iXIncrement < ui->qtwGrilleDeJeux->columnCount(); iXIncrement++)
     {
         for(int iYIncrement = 0; iYIncrement < ui->qtwGrilleDeJeux->rowCount(); iYIncrement++)
@@ -28,6 +30,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             ui->qtwGrilleDeJeux->item(iYIncrement, iXIncrement)->setBackgroundColor(Qt::white);
         }
     }
+
+    connect(ui->actionNouvelle_Partie, SIGNAL(triggered()), this, SLOT(slotNouvellePartie()));
 }
 
 MainWindow::~MainWindow()
@@ -41,6 +45,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+// Permet de netoyer la grille de jeux
 void MainWindow::NetoyageTotalGrille()
 {
     for(int iXIncrement = 0; iXIncrement < ui->qtwGrilleDeJeux->columnCount(); iXIncrement++)
@@ -50,33 +55,44 @@ void MainWindow::NetoyageTotalGrille()
     }
 }
 
+// Permet d'activer ou de desactiver les bouttons de l'interface
+void MainWindow::ActivationBouton(bool p_bActivation)
+{
+    ui->boutonBas->setEnabled(p_bActivation);
+    ui->boutonDroite->setEnabled(p_bActivation);
+    ui->boutonGauche->setEnabled(p_bActivation);
+    ui->boutonRotDroite->setEnabled(p_bActivation);
+    ui->boutonRotGauche->setEnabled(p_bActivation);
+}
+
+// Permet la gestion des connection  deconnection
 void MainWindow::on_boutonConnection_clicked()
 {
     QUrl url;
 
-    if(m_bConnectionEtablie == false)
+    if(m_bConnectionEtablie == false)       // Si la connection nest pas etablie
     {
-        url.setUrl("http://" + ui->lineEdit->text() + "/login_client_classique");
+        url.setUrl("http://" + ui->lineEdit->text() + "/login_client_classique");   // requete GET vers le serveur
         m_pqnamManagerConnection->get(QNetworkRequest(url));
     }
-    else
+    else                            // Sinon deconnection du client
     {
         url.setUrl("http://" + ui->lineEdit->text() + "/logout_client_classique");
         QByteArray baParameter;
         baParameter.append("nom_client=" + m_sNomConnection);
-        qDebug() << baParameter;
-        m_pqnamManagerConnection->post(QNetworkRequest(url), baParameter);
+        m_pqnamManagerConnection->post(QNetworkRequest(url), baParameter);  // requete POST vers le serveur avec le nom du client
     }
 }
 
+// Reception de reponse a la requete de connection ou de deconnection
 void MainWindow::slotOnConnection(QNetworkReply* p_pnrReponse)
 {
     QVariant statusCode = p_pnrReponse->attribute(QNetworkRequest::HttpStatusCodeAttribute);
     QString sReponse = p_pnrReponse->readAll();
 
-    if(statusCode.isValid())
+    if(statusCode.isValid())        // Test si le code est valide
     {
-        if(m_bConnectionEtablie == false)
+        if(m_bConnectionEtablie == false)   // Si la connection nest pas etablie
         {
             m_sNomConnection = sReponse;
             m_bConnectionEtablie = true;
@@ -84,11 +100,7 @@ void MainWindow::slotOnConnection(QNetworkReply* p_pnrReponse)
             ui->boutonConnection->setText("Deconnection");
             ui->lineEdit->setEnabled(false);
 
-            ui->boutonBas->setEnabled(true);
-            ui->boutonDroite->setEnabled(true);
-            ui->boutonGauche->setEnabled(true);
-            ui->boutonRotDroite->setEnabled(true);
-            ui->boutonRotGauche->setEnabled(true);
+            ActivationBouton(true);
 
             NetoyageTotalGrille();
 
@@ -100,7 +112,7 @@ void MainWindow::slotOnConnection(QNetworkReply* p_pnrReponse)
             m_pthThreadTimer->start();
             m_pPieceGetter->startTimerAcquisition();
         }
-        else
+        else                // Si la connection est deja etablie
         {
             m_sNomConnection = "";
             m_bConnectionEtablie = false;
@@ -108,11 +120,7 @@ void MainWindow::slotOnConnection(QNetworkReply* p_pnrReponse)
             ui->boutonConnection->setText("Connection");
             ui->lineEdit->setEnabled(true);
 
-            ui->boutonBas->setEnabled(false);
-            ui->boutonDroite->setEnabled(false);
-            ui->boutonGauche->setEnabled(false);
-            ui->boutonRotDroite->setEnabled(false);
-            ui->boutonRotGauche->setEnabled(false);
+            ActivationBouton(false);
 
             m_pthThreadTimer->exit();
             m_pthThreadAnimation->exit();
@@ -122,6 +130,7 @@ void MainWindow::slotOnConnection(QNetworkReply* p_pnrReponse)
         ui->label->setText(sReponse);
 }
 
+// Recupere la reponse depuis la requete de recuperation des pieces et active l'animation si les pieces sont dispobible
 void MainWindow::slotAnimation(QString p_sPiece)
 {
     if(p_sPiece == "I")
@@ -141,35 +150,44 @@ void MainWindow::slotAnimation(QString p_sPiece)
     else
         return;
 
-    if(!m_pthThreadAnimation->isRunning())
+    if(!m_pthThreadAnimation->isRunning())      // Si l'animation n'est pas lancer
     {
-        m_pthThreadAnimation->start();
-        m_pAnimation->startTimerAnimation(m_qFIFOTetromino.dequeue());
+        m_pthThreadAnimation->start();          // Debut de l'animation
+        m_pAnimation->startTimerAnimation(m_qFIFOTetromino.dequeue());      // Envoie la piece pour animation
         connect(m_pAnimation, SIGNAL(signalStop()), this, SLOT(slotStopAnimation()));
         connect(m_pAnimation, SIGNAL(signalPerdu()), this, SLOT(slotPartiePerdu));
     }
-    else if(m_bAttentePiece == true)
+    else if(m_bAttentePiece == true)            // Si une pieces est demande (et que l'animation est en attente)
     {
         m_bAttentePiece = false;
-        m_pAnimation->startTimerAnimation(m_qFIFOTetromino.dequeue());
+        m_pAnimation->startTimerAnimation(m_qFIFOTetromino.dequeue());  //Envoie la piece pour animation
     }
 }
 
+// Reception du signal qu'une piece est stopper
 void MainWindow::slotStopAnimation()
 {
-    if(m_qFIFOTetromino.isEmpty())
-        m_bAttentePiece = true;
+    if(m_qFIFOTetromino.isEmpty())      // si la liste est vide
+        m_bAttentePiece = true;         // le thread annimation est en attente
     else
-        m_pAnimation->startTimerAnimation(m_qFIFOTetromino.dequeue());
+        m_pAnimation->startTimerAnimation(m_qFIFOTetromino.dequeue());  // donne direcemnt la piece suivante
 }
 
+// La partie est perdu, tout les bouttons sont desactiver
 void MainWindow::slotPartiePerdu()
 {
-     m_pthThreadAnimation->exit();
+    m_pthThreadAnimation->exit();
 
-     ui->boutonBas->setEnabled(false);
-     ui->boutonDroite->setEnabled(false);
-     ui->boutonGauche->setEnabled(false);
-     ui->boutonRotDroite->setEnabled(false);
-     ui->boutonRotGauche->setEnabled(false);
+    ActivationBouton(false);
+}
+
+// reactive les bouttons et relance le thread
+void MainWindow::slotNouvellePartie()
+{
+    if(m_bConnectionEtablie == true)
+    {
+        NetoyageTotalGrille();
+        ui->labelScore->setText(0);
+        ActivationBouton(true);
+    }
 }

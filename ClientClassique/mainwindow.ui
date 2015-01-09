@@ -212,6 +212,9 @@
        </item>
        <item row="1" column="2">
         <widget class="QPushButton" name="boutonRotDroite">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>Rot. Droite</string>
          </property>
@@ -219,6 +222,9 @@
        </item>
        <item row="1" column="0">
         <widget class="QPushButton" name="boutonRotGauche">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>Rot. Gauche</string>
          </property>

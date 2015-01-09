@@ -18,11 +18,12 @@ private:
     Ui::MainWindow* m_pUi;
     Tetromino* m_pTetromino;
     QTimer* m_ptTimer;
+    QMutex* m_pmMutex;
 
     int m_iXOrigine;
     int m_iYOrigine;
 
-    bool Mouvement(int p_iXOffset, int p_iYOffset, bool p_iDescenteAuto);
+    bool Mouvement(eDirection p_eDirection, bool p_iDescenteAuto);
     void NetoyagePosition();
     void AffichagePosition(int p_iXOffset, int p_iYOffset);
 

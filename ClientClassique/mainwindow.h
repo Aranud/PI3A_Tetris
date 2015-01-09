@@ -37,6 +37,7 @@ private:
     Tetromino* m_pTetromino;
 
     void NetoyageTotalGrille();
+    void ActivationBouton(bool p_bActivation);
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -49,6 +50,7 @@ private slots:
     void slotAnimation(QString p_sPiece);
     void slotStopAnimation();
     void slotPartiePerdu();
+    void slotNouvellePartie();
 
 signals:
     void pieceDisponible();

@@ -22,28 +22,26 @@ PieceGetter::~PieceGetter()
 
 void PieceGetter::startTimerAcquisition()
 {
-    m_ptTimer->start();
+    m_ptTimer->start(); // demarre le timer d'acquisition
 }
 
+// Appel de l'aquisition lorsque le timer est ecoule par requete HTTP
 void PieceGetter::slotAcquisition()
 {
     QUrl url;
-    url.setUrl("http://" + m_sAdresse + "/obtenir_pieces");
+    url.setUrl("http://" + m_sAdresse + "/obtenir_pieces");  // creation de l'url
 
     QByteArray baParameter;
     baParameter.append("nom_client=" + m_sNomConnection);
-    qDebug() << baParameter;
-    m_pqnamManagerPieces->post(QNetworkRequest(url), baParameter);
+    m_pqnamManagerPieces->post(QNetworkRequest(url), baParameter);      // envoie de la requete http POST
 }
 
+// Recupere la piece
 void PieceGetter::slotOnReadyReadPieces(QNetworkReply *p_pnrReponse)
 {
     QVariant statusCode = p_pnrReponse->attribute(QNetworkRequest::HttpStatusCodeAttribute);
     QString sReponse = p_pnrReponse->readAll();
 
     if(statusCode.isValid())
-    {
-        qDebug() << sReponse;
         emit pieceDisponible(sReponse);
-    }
 }
