@@ -6,15 +6,18 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->setupUi(this);
 
     m_bConnectionEtablie = false;
+    m_bAttentePiece = false;
     m_sNomConnection = "";
 
     m_pqnamManagerConnection = new QNetworkAccessManager(this);
     connect(m_pqnamManagerConnection, SIGNAL(finished(QNetworkReply*)), this, SLOT(slotOnConnection(QNetworkReply*)));
 
-    m_pAnimation = NULL;
+    m_pAnimation = new Animation(ui, 0);
+    m_pthThreadAnimation = new QThread(this);
+    m_pAnimation->moveToThread(m_pthThreadAnimation);
+
     m_pPieceGetter = NULL;
     m_pthThreadTimer = NULL;
-    m_pthThreadAnimation = NULL;
 
     for(int iXIncrement = 0; iXIncrement < ui->qtwGrilleDeJeux->columnCount(); iXIncrement++)
     {
@@ -72,8 +75,11 @@ void MainWindow::slotOnConnection(QNetworkReply* p_pnrReponse)
             ui->boutonConnection->setText("Deconnection");
             ui->lineEdit->setEnabled(false);
 
-            m_pPieceGetter = new PieceGetter(ui->lineEdit->text(), m_sNomConnection, 0);
+            ui->boutonBas->setEnabled(true);
+            ui->boutonDroite->setEnabled(true);
+            ui->boutonGauche->setEnabled(true);
 
+            m_pPieceGetter = new PieceGetter(ui->lineEdit->text(), m_sNomConnection, 0);
             connect(m_pPieceGetter, SIGNAL(pieceDisponible(QString)), this, SLOT(slotAnimation(QString)));
 
             m_pthThreadTimer = new QThread(this);
@@ -88,7 +94,13 @@ void MainWindow::slotOnConnection(QNetworkReply* p_pnrReponse)
             ui->label->setText(sReponse);
             ui->boutonConnection->setText("Connection");
             ui->lineEdit->setEnabled(true);
+
+            ui->boutonBas->setEnabled(false);
+            ui->boutonDroite->setEnabled(false);
+            ui->boutonGauche->setEnabled(false);
+
             m_pthThreadTimer->exit();
+            m_pthThreadAnimation->exit();
         }
     }
     else
@@ -114,21 +126,29 @@ void MainWindow::slotAnimation(QString p_sPiece)
     else
         return;
 
-    if(m_pAnimation == NULL)
+    if(!m_pthThreadAnimation->isRunning())
     {
-        m_pAnimation = new Animation(ui, 0);
-        m_pthThreadAnimation = new QThread(this);
-        m_pAnimation->moveToThread(m_pthThreadAnimation);
         m_pthThreadAnimation->start();
         m_pAnimation->startTimerAnimation(m_qFIFOTetromino.dequeue());
         connect(m_pAnimation, SIGNAL(signalStop()), this, SLOT(slotStopAnimation()));
+        connect(m_pAnimation, SIGNAL(signalPerdu()), this, SLOT(slotPartiePerdu));
+    }
+    else if(m_bAttentePiece == true)
+    {
+        m_bAttentePiece = false;
+        m_pAnimation->startTimerAnimation(m_qFIFOTetromino.dequeue());
     }
 }
 
 void MainWindow::slotStopAnimation()
 {
     if(m_qFIFOTetromino.isEmpty())
-        m_pthThreadAnimation->exit();
+        m_bAttentePiece = true;
     else
-       m_pAnimation->startTimerAnimation(m_qFIFOTetromino.dequeue());
+        m_pAnimation->startTimerAnimation(m_qFIFOTetromino.dequeue());
+}
+
+void MainWindow::slotPartiePerdu()
+{
+     m_pthThreadAnimation->exit();
 }

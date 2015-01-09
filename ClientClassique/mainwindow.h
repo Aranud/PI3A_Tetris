@@ -25,6 +25,7 @@ private:
     QQueue<Tetromino*> m_qFIFOTetromino;
 
     bool m_bConnectionEtablie;
+    bool m_bAttentePiece;
     QString m_sNomConnection;
 
     QThread* m_pthThreadTimer;
@@ -46,6 +47,7 @@ private slots:
     void slotOnConnection(QNetworkReply* p_pnrReponse);
     void slotAnimation(QString p_sPiece);
     void slotStopAnimation();
+    void slotPartiePerdu();
 
 signals:
     void pieceDisponible();

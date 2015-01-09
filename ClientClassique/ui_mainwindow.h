@@ -144,16 +144,19 @@ public:
         horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
         boutonGauche = new QPushButton(qvfFrameGauche);
         boutonGauche->setObjectName(QStringLiteral("boutonGauche"));
+        boutonGauche->setEnabled(false);
 
         horizontalLayout->addWidget(boutonGauche);
 
         boutonBas = new QPushButton(qvfFrameGauche);
         boutonBas->setObjectName(QStringLiteral("boutonBas"));
+        boutonBas->setEnabled(false);
 
         horizontalLayout->addWidget(boutonBas);
 
         boutonDroite = new QPushButton(qvfFrameGauche);
         boutonDroite->setObjectName(QStringLiteral("boutonDroite"));
+        boutonDroite->setEnabled(false);
 
         horizontalLayout->addWidget(boutonDroite);
 

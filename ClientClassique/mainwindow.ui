@@ -173,6 +173,9 @@
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
           <widget class="QPushButton" name="boutonGauche">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="text">
             <string>Gauche</string>
            </property>
@@ -180,6 +183,9 @@
          </item>
          <item>
           <widget class="QPushButton" name="boutonBas">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="text">
             <string>Bas</string>
            </property>
@@ -187,6 +193,9 @@
          </item>
          <item>
           <widget class="QPushButton" name="boutonDroite">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="text">
             <string>Droite</string>
            </property>
