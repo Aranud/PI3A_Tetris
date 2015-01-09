@@ -16,6 +16,7 @@ Animation::Animation(Ui::MainWindow *p_pUi, QObject* parent) :
     connect(p_pUi->boutonDroite, SIGNAL(clicked()), this, SLOT(slotDecalageDroiteTetromino()));
     connect(p_pUi->boutonGauche, SIGNAL(clicked()), this, SLOT(slotDecalageGaucheTetromino()));
     connect(p_pUi->boutonBas, SIGNAL(clicked()), this, SLOT(slotDescenteTetromino()));
+    connect(this, SIGNAL(signalStop()), this, SLOT(slotTestLigne()));
 }
 
 Animation::~Animation()
@@ -25,36 +26,20 @@ Animation::~Animation()
 
 void Animation::startTimerAnimation(Tetromino* p_pTetromino)
 {
-    m_iXOrigine = 4;
-    m_iYOrigine = 0;
-    m_pTetromino = p_pTetromino;
+    m_iXOrigine = 4;            // Origine selon les X (colones)
+    m_iYOrigine = 0;            // Origine selon les Y (lignes)
+    m_pTetromino = p_pTetromino;    // Le tetromino actif
 
-    foreach(QPoint pPoint, m_pTetromino->getListPoint())
+    if(!Mouvement(0, 0, true))  // Si le mouvement echoue la partie est termine
     {
-        int iX = m_iXOrigine + pPoint.x();
-        int iY = m_iYOrigine + pPoint.y();
-
-        if(m_pUi->qtwGrilleDeJeux->item(iY, iX)->backgroundColor() != Qt::white)
-        {
-            emit signalPerdu();
-            return;
-        }
+        emit signalPerdu();     // Indique que la partie est perdu
+        return;
     }
 
-    foreach(QPoint pPoint, m_pTetromino->getListPoint())
-    {
-        int iX = m_iXOrigine + pPoint.x();
-        int iY = m_iYOrigine + pPoint.y();
-
-        m_pUi->qtwGrilleDeJeux->item(iY, iX)->setBackgroundColor(m_pTetromino->getColor());
-    }
-    m_pUi->qtwGrilleDeJeux->viewport()->update();
-    //m_iYOrigine++;
-
-    m_ptTimer->start();
+    m_ptTimer->start();         // Permet l'animation de la pieces vers le bas
 }
 
-bool Animation::Mouvement(int p_iXOffset, int p_iYOffset)
+bool Animation::Mouvement(int p_iXOffset, int p_iYOffset, bool p_iDescente)
 {
     foreach(QPoint pPoint, m_pTetromino->getListPoint())
     {
@@ -65,8 +50,11 @@ bool Animation::Mouvement(int p_iXOffset, int p_iYOffset)
             return false;
         else if(iY == m_pUi->qtwGrilleDeJeux->rowCount())
         {
-            emit signalStop();
-            m_ptTimer->stop();
+            if(p_iDescente == true)
+            {
+                emit signalStop();
+                m_ptTimer->stop();
+            }
             return false;
         }
         else if(m_pUi->qtwGrilleDeJeux->item(iY, iX)->backgroundColor() != Qt::white)
@@ -85,13 +73,17 @@ bool Animation::Mouvement(int p_iXOffset, int p_iYOffset)
             }
             if(bEstPointActuel == false)
             {
-                emit signalStop();
-                m_ptTimer->stop();
+                if(p_iDescente == true)
+                {
+                    emit signalStop();
+                    m_ptTimer->stop();
+                }
                 return false;
             }
         }
     }
 
+    // Netoyage de la position actuel
     foreach(QPoint pPoint, m_pTetromino->getListPoint())
     {
         int iX = m_iXOrigine + pPoint.x();
@@ -100,6 +92,7 @@ bool Animation::Mouvement(int p_iXOffset, int p_iYOffset)
         m_pUi->qtwGrilleDeJeux->item(iY, iX)->setBackgroundColor(Qt::white);
     }
 
+    // Affichage du tetromino sur la nouvelle position
     foreach(QPoint pPoint, m_pTetromino->getListPoint())
     {
         int iX = m_iXOrigine + pPoint.x() + p_iXOffset;
@@ -107,7 +100,6 @@ bool Animation::Mouvement(int p_iXOffset, int p_iYOffset)
 
         m_pUi->qtwGrilleDeJeux->item(iY, iX)->setBackgroundColor(m_pTetromino->getColor());
     }
-
     m_pUi->qtwGrilleDeJeux->viewport()->update();
 
     return true;
@@ -115,177 +107,23 @@ bool Animation::Mouvement(int p_iXOffset, int p_iYOffset)
 
 void Animation::slotDecalageDroiteTetromino()
 {
-    if(Mouvement(1,0))
-         m_iXOrigine++;
-    /*
-    foreach(QPoint pPoint, m_pTetromino->getListPoint())
-    {
-        int iX = m_iXOrigine + pPoint.x() + 1;
-        int iY = m_iYOrigine + pPoint.y();
-
-        if(iX == m_pUi->qtwGrilleDeJeux->columnCount())
-            return;
-
-        else if(m_pUi->qtwGrilleDeJeux->item(iY, iX)->backgroundColor() != Qt::white)
-        {
-            bool bEstPointActuel = false;
-
-            foreach(QPoint pPointActuel, m_pTetromino->getListPoint())
-            {
-                int iXActuel = m_iXOrigine + pPointActuel.x();
-                int iYActuel = m_iYOrigine + pPointActuel.y();
-                if(iX == iXActuel && iY == iYActuel)
-                {
-                    bEstPointActuel = true;
-                    break;
-                }
-            }
-            if(bEstPointActuel == false)
-                return;
-        }
-    }
-
-    foreach(QPoint pPoint, m_pTetromino->getListPoint())
-    {
-        int iX = m_iXOrigine + pPoint.x();
-        int iY = m_iYOrigine + pPoint.y();
-
-        m_pUi->qtwGrilleDeJeux->item(iY, iX)->setBackgroundColor(Qt::white);
-    }
-
-    m_iXOrigine++;
-
-    foreach(QPoint pPoint, m_pTetromino->getListPoint())
-    {
-        int iX = m_iXOrigine + pPoint.x();
-        int iY = m_iYOrigine + pPoint.y();
-
-        m_pUi->qtwGrilleDeJeux->item(iY, iX)->setBackgroundColor(m_pTetromino->getColor());
-    }
-
-    m_pUi->qtwGrilleDeJeux->viewport()->update();
-    */
+    if(Mouvement(1, 0, false))  // Si le mouvement reussie
+         m_iXOrigine++;         // Deplacement de l'origine
 }
 
 void Animation::slotDecalageGaucheTetromino()
 {
-    if(Mouvement(-1, 0))
-         m_iXOrigine--;
-    /*
-    foreach(QPoint pPoint, m_pTetromino->getListPoint())
-    {
-        int iX = m_iXOrigine + pPoint.x() - 1;
-        int iY = m_iYOrigine + pPoint.y();
+    if(Mouvement(-1, 0, false))  // Si le mouvement reussie
+        m_iXOrigine--;          // Deplacement de l'origine
+}
 
-        if(iX < 0)
-            return;
+void Animation::slotTestLigne()
+{
 
-        else if(m_pUi->qtwGrilleDeJeux->item(iY, iX)->backgroundColor() != Qt::white)
-        {
-            bool bEstPointActuel = false;
-
-            foreach(QPoint pPointActuel, m_pTetromino->getListPoint())
-            {
-                int iXActuel = m_iXOrigine + pPointActuel.x();
-                int iYActuel = m_iYOrigine + pPointActuel.y();
-                if(iX == iXActuel && iY == iYActuel)
-                {
-                    bEstPointActuel = true;
-                    break;
-                }
-            }
-            if(bEstPointActuel == false)
-                return;
-        }
-    }
-
-    foreach(QPoint pPoint, m_pTetromino->getListPoint())
-    {
-        int iX = m_iXOrigine + pPoint.x();
-        int iY = m_iYOrigine + pPoint.y();
-
-        m_pUi->qtwGrilleDeJeux->item(iY, iX)->setBackgroundColor(Qt::white);
-    }
-
-    m_iXOrigine--;
-
-    foreach(QPoint pPoint, m_pTetromino->getListPoint())
-    {
-        int iX = m_iXOrigine + pPoint.x();
-        int iY = m_iYOrigine + pPoint.y();
-
-        m_pUi->qtwGrilleDeJeux->item(iY, iX)->setBackgroundColor(m_pTetromino->getColor());
-    }
-
-    m_pUi->qtwGrilleDeJeux->viewport()->update();
-    */
 }
 
 void Animation::slotDescenteTetromino()
 {
-    if(Mouvement(0, 1))
-         m_iYOrigine++;
-
-    /*
-    m_iYOrigine++;
-
-    if(m_iYOrigine == m_pUi->qtwGrilleDeJeux->rowCount())
-    {
-        emit signalStop();
-        m_ptTimer->stop();
-        return;
-    }
-
-    foreach(QPoint pPoint, m_pTetromino->getListPoint())
-    {
-        int iX = m_iXOrigine + pPoint.x();
-        int iY = m_iYOrigine + pPoint.y();
-
-        if(iY == m_pUi->qtwGrilleDeJeux->rowCount())
-        {
-            emit signalStop();
-            m_ptTimer->stop();
-            return;
-        }
-        else if(m_pUi->qtwGrilleDeJeux->item(iY, iX)->backgroundColor() != Qt::white)
-        {
-            bool bEstPointActuel = false;
-
-            foreach(QPoint pPointActuel, m_pTetromino->getListPoint())
-            {
-                int iXActuel = m_iXOrigine + pPointActuel.x();
-                int iYActuel = m_iYOrigine + pPointActuel.y() - 1;
-                if(iX == iXActuel && iY == iYActuel)
-                {
-                    bEstPointActuel = true;
-                    break;
-                }
-            }
-            if(bEstPointActuel == false)
-            {
-                emit signalStop();
-                m_ptTimer->stop();
-                return;
-            }
-        }
-    }
-
-    foreach(QPoint pPoint, m_pTetromino->getListPoint())
-    {
-        int iX = m_iXOrigine + pPoint.x();
-        int iY = m_iYOrigine + pPoint.y();
-
-        m_pUi->qtwGrilleDeJeux->item(iY - 1, iX)->setBackgroundColor(Qt::white);
-    }
-
-    foreach(QPoint pPoint, m_pTetromino->getListPoint())
-    {
-        int iX = m_iXOrigine + pPoint.x();
-        int iY = m_iYOrigine + pPoint.y();
-
-        m_pUi->qtwGrilleDeJeux->item(iY, iX)->setBackgroundColor(m_pTetromino->getColor());
-    }
-
-    m_pUi->qtwGrilleDeJeux->viewport()->update();
-    */
+    if(Mouvement(0, 1, true))   // Si le mouvement reussie
+         m_iYOrigine++;         // Deplacement de l'origine
 }

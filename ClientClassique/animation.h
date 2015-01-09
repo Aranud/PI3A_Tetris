@@ -22,7 +22,7 @@ private:
     int m_iXOrigine;
     int m_iYOrigine;
 
-    bool Mouvement(int p_iXOffset, int p_iYOffset);
+    bool Mouvement(int p_iXOffset, int p_iYOffset, bool p_iDescente);
 
 public slots:
 
@@ -30,6 +30,7 @@ private slots:
     void slotDescenteTetromino();
     void slotDecalageDroiteTetromino();
     void slotDecalageGaucheTetromino();
+    void slotTestLigne();
 
 signals:
     void resultReady(const QString &s);
