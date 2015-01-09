@@ -27,7 +27,10 @@ import java.util.List;
 
 public class MyActivity extends Activity {
 
-    private static final String USER_AGENT = "Mozilla/5.0";
+    private static final String HTTP = "http://";
+    private static final String REQUETE_CONNECTION = "/login_client_mobile";
+    private static final String REQUETE_DECONNECTION = "/logout_client_mobile";
+    private static final String REQUETE_ENVOYER_TETROMINO = "/envoie_piece";
 
     private static final String TETROMINOI = "I";
     private static final String TETROMINOT = "T";
@@ -86,6 +89,8 @@ public class MyActivity extends Activity {
         boutonTetrominoL = (ImageButton) findViewById(R.id.boutonTetrominoL);
         boutonTetrominoS = (ImageButton) findViewById(R.id.boutonTetrominoS);
         boutonTetrominoZ = (ImageButton) findViewById(R.id.boutonTetrominoZ);
+
+        ActivationBoutton(false);
 
         boutonConnectionListener = new View.OnClickListener()  {
             public void onClick(View v) {
@@ -209,7 +214,7 @@ public class MyActivity extends Activity {
 
     private void SendTetromino(String tetromino) throws Exception{
 
-        String url = "http://" + adresse + "/envoie_piece";
+        String url = HTTP + adresse + REQUETE_ENVOYER_TETROMINO;
 
         HttpClient httpclient = new DefaultHttpClient();
         HttpPost httppost = new HttpPost(url);
@@ -230,7 +235,7 @@ public class MyActivity extends Activity {
                 response.getEntity().writeTo(out);
                 out.close();
                 String responseString = out.toString();
-                System.out.println(responseString);
+
                 zoneDeTexte.setText(responseString);
             } else{
                 //Closes the connection.
@@ -248,7 +253,7 @@ public class MyActivity extends Activity {
 
         adresse = editTextAdresse.getText().toString();
 
-        String myurl = "http://" + adresse + "/login_client_mobile";
+        String myurl = HTTP + adresse + REQUETE_CONNECTION;
         URI url = new URI(myurl);
 
         HttpClient httpclient = new DefaultHttpClient();
@@ -262,11 +267,14 @@ public class MyActivity extends Activity {
             response.getEntity().writeTo(out);
             out.close();
             String responseString = out.toString();
+
             zoneDeTexte.setText(responseString);
             nomClientClassique = responseString;
             connectionEtablie = true;
             boutonConnection.setText("Deconnection");
             editTextAdresse.setEnabled(false);
+
+            ActivationBoutton(true);
 
         } else if(statusLine.getStatusCode() == HttpStatus.SC_NO_CONTENT) {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -284,7 +292,7 @@ public class MyActivity extends Activity {
 
     private void Deconnection() {
 
-        String url = "http://" + adresse + "/logout_client_mobile";
+        String url = HTTP + adresse + REQUETE_DECONNECTION;
 
         HttpClient httpclient = new DefaultHttpClient();
         HttpPost httppost = new HttpPost(url);
@@ -304,14 +312,16 @@ public class MyActivity extends Activity {
                 response.getEntity().writeTo(out);
                 out.close();
                 String responseString = out.toString();
-                System.out.println(responseString);
+
                 zoneDeTexte.setText(responseString);
                 nomClientClassique = "";
                 connectionEtablie = false;
                 boutonConnection.setText("Connection");
                 editTextAdresse.setEnabled(true);
                 adresse = "";
-                //..more logic
+
+                ActivationBoutton(false);
+
             } else{
                 //Closes the connection.
                 response.getEntity().getContent().close();
@@ -323,4 +333,17 @@ public class MyActivity extends Activity {
             // TODO Auto-generated catch block
         }
     }
+
+    private void ActivationBoutton(boolean enable){
+
+        boutonTetrominoI.setEnabled(enable);
+        boutonTetrominoT.setEnabled(enable);
+        boutonTetrominoO.setEnabled(enable);
+        boutonTetrominoJ.setEnabled(enable);
+        boutonTetrominoL.setEnabled(enable);
+        boutonTetrominoS.setEnabled(enable);
+        boutonTetrominoZ.setEnabled(enable);
+    }
+
+
 }
