@@ -41,6 +41,15 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::NetoyageTotalGrille()
+{
+    for(int iXIncrement = 0; iXIncrement < ui->qtwGrilleDeJeux->columnCount(); iXIncrement++)
+    {
+        for(int iYIncrement = 0; iYIncrement < ui->qtwGrilleDeJeux->rowCount(); iYIncrement++)
+            ui->qtwGrilleDeJeux->item(iYIncrement, iXIncrement)->setBackgroundColor(Qt::white);
+    }
+}
+
 void MainWindow::on_boutonConnection_clicked()
 {
     QUrl url;
@@ -78,6 +87,10 @@ void MainWindow::slotOnConnection(QNetworkReply* p_pnrReponse)
             ui->boutonBas->setEnabled(true);
             ui->boutonDroite->setEnabled(true);
             ui->boutonGauche->setEnabled(true);
+            ui->boutonRotDroite->setEnabled(true);
+            ui->boutonRotGauche->setEnabled(true);
+
+            NetoyageTotalGrille();
 
             m_pPieceGetter = new PieceGetter(ui->lineEdit->text(), m_sNomConnection, 0);
             connect(m_pPieceGetter, SIGNAL(pieceDisponible(QString)), this, SLOT(slotAnimation(QString)));
@@ -98,6 +111,8 @@ void MainWindow::slotOnConnection(QNetworkReply* p_pnrReponse)
             ui->boutonBas->setEnabled(false);
             ui->boutonDroite->setEnabled(false);
             ui->boutonGauche->setEnabled(false);
+            ui->boutonRotDroite->setEnabled(false);
+            ui->boutonRotGauche->setEnabled(false);
 
             m_pthThreadTimer->exit();
             m_pthThreadAnimation->exit();
@@ -151,4 +166,10 @@ void MainWindow::slotStopAnimation()
 void MainWindow::slotPartiePerdu()
 {
      m_pthThreadAnimation->exit();
+
+     ui->boutonBas->setEnabled(false);
+     ui->boutonDroite->setEnabled(false);
+     ui->boutonGauche->setEnabled(false);
+     ui->boutonRotDroite->setEnabled(false);
+     ui->boutonRotGauche->setEnabled(false);
 }

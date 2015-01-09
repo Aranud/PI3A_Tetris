@@ -9,6 +9,9 @@ class Tetromino : QObject
 private:
     QList<QPoint> m_lpListPoint;
     QColor m_cColor;
+    eTetromino m_eTetrimino;
+    eEtatTetromino m_eEtatTetromino;
+    void Rotation(int p_iValue);
 
 public:
     explicit Tetromino(eTetromino p_eTetromino, QObject *parent = 0);
@@ -19,6 +22,9 @@ public:
 
     QColor getColor() const;
     void setColor(const QColor &cColor);
+
+    void RotationDroite();
+    void RotationGauche();
 
 signals:
 

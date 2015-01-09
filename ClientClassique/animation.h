@@ -22,14 +22,19 @@ private:
     int m_iXOrigine;
     int m_iYOrigine;
 
-    bool Mouvement(int p_iXOffset, int p_iYOffset, bool p_iDescente);
+    bool Mouvement(int p_iXOffset, int p_iYOffset, bool p_iDescenteAuto);
+    void NetoyagePosition();
+    void AffichagePosition(int p_iXOffset, int p_iYOffset);
 
 public slots:
 
 private slots:
     void slotDescenteTetromino();
+    void slotDescenteAutoTetromino();
     void slotDecalageDroiteTetromino();
     void slotDecalageGaucheTetromino();
+    void slotRotationDroiteTetromino();
+    void slotRotationGaucheTetromino();
     void slotTestLigne();
 
 signals:

@@ -36,6 +36,7 @@ private:
 
     Tetromino* m_pTetromino;
 
+    void NetoyageTotalGrille();
 
 public:
     explicit MainWindow(QWidget *parent = 0);

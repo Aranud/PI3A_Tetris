@@ -14,7 +14,7 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QFrame>
-#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QGridLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
@@ -47,10 +47,12 @@ public:
     QVBoxLayout *qvblFenetreInferieur;
     QLabel *labelPiecesRecu;
     QLabel *labelScore;
-    QHBoxLayout *horizontalLayout;
+    QGridLayout *gridLayout;
     QPushButton *boutonGauche;
-    QPushButton *boutonBas;
     QPushButton *boutonDroite;
+    QPushButton *boutonBas;
+    QPushButton *boutonRotDroite;
+    QPushButton *boutonRotGauche;
     QMenuBar *menuBar;
     QMenu *menuPI3A_Tetris;
     QToolBar *mainToolBar;
@@ -136,35 +138,50 @@ public:
 
         labelScore = new QLabel(qvfFrameGauche);
         labelScore->setObjectName(QStringLiteral("labelScore"));
+        QFont font;
+        font.setPointSize(20);
+        font.setBold(true);
+        font.setWeight(75);
+        labelScore->setFont(font);
 
         qvblFenetreInferieur->addWidget(labelScore);
 
-        horizontalLayout = new QHBoxLayout();
-        horizontalLayout->setSpacing(6);
-        horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
+
+        verticalLayout->addLayout(qvblFenetreInferieur);
+
+        gridLayout = new QGridLayout();
+        gridLayout->setSpacing(6);
+        gridLayout->setObjectName(QStringLiteral("gridLayout"));
         boutonGauche = new QPushButton(qvfFrameGauche);
         boutonGauche->setObjectName(QStringLiteral("boutonGauche"));
         boutonGauche->setEnabled(false);
 
-        horizontalLayout->addWidget(boutonGauche);
-
-        boutonBas = new QPushButton(qvfFrameGauche);
-        boutonBas->setObjectName(QStringLiteral("boutonBas"));
-        boutonBas->setEnabled(false);
-
-        horizontalLayout->addWidget(boutonBas);
+        gridLayout->addWidget(boutonGauche, 0, 0, 1, 1);
 
         boutonDroite = new QPushButton(qvfFrameGauche);
         boutonDroite->setObjectName(QStringLiteral("boutonDroite"));
         boutonDroite->setEnabled(false);
 
-        horizontalLayout->addWidget(boutonDroite);
+        gridLayout->addWidget(boutonDroite, 0, 2, 1, 1);
+
+        boutonBas = new QPushButton(qvfFrameGauche);
+        boutonBas->setObjectName(QStringLiteral("boutonBas"));
+        boutonBas->setEnabled(false);
+
+        gridLayout->addWidget(boutonBas, 0, 1, 1, 1);
+
+        boutonRotDroite = new QPushButton(qvfFrameGauche);
+        boutonRotDroite->setObjectName(QStringLiteral("boutonRotDroite"));
+
+        gridLayout->addWidget(boutonRotDroite, 1, 2, 1, 1);
+
+        boutonRotGauche = new QPushButton(qvfFrameGauche);
+        boutonRotGauche->setObjectName(QStringLiteral("boutonRotGauche"));
+
+        gridLayout->addWidget(boutonRotGauche, 1, 0, 1, 1);
 
 
-        qvblFenetreInferieur->addLayout(horizontalLayout);
-
-
-        verticalLayout->addLayout(qvblFenetreInferieur);
+        verticalLayout->addLayout(gridLayout);
 
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
@@ -199,11 +216,13 @@ public:
         lineEdit->setText(QApplication::translate("MainWindow", "localhost:5000", 0));
         boutonConnection->setText(QApplication::translate("MainWindow", "Connection", 0));
         label->setText(QApplication::translate("MainWindow", "(Indique si le client est connecte)", 0));
-        labelPiecesRecu->setText(QApplication::translate("MainWindow", "TextLabel", 0));
-        labelScore->setText(QApplication::translate("MainWindow", "TextLabel", 0));
+        labelPiecesRecu->setText(QString());
+        labelScore->setText(QApplication::translate("MainWindow", "0", 0));
         boutonGauche->setText(QApplication::translate("MainWindow", "Gauche", 0));
-        boutonBas->setText(QApplication::translate("MainWindow", "Bas", 0));
         boutonDroite->setText(QApplication::translate("MainWindow", "Droite", 0));
+        boutonBas->setText(QApplication::translate("MainWindow", "Bas", 0));
+        boutonRotDroite->setText(QApplication::translate("MainWindow", "Rot. Droite", 0));
+        boutonRotGauche->setText(QApplication::translate("MainWindow", "Rot. Gauche", 0));
         menuPI3A_Tetris->setTitle(QApplication::translate("MainWindow", "Menu", 0));
     } // retranslateUi
 
