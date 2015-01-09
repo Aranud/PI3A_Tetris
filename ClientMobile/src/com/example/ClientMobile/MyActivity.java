@@ -242,8 +242,8 @@ public class MyActivity extends Activity {
 
         // Iinitialisation du client http
         HttpClient httpclient = new DefaultHttpClient();
-        //StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        //StrictMode.setThreadPolicy(policy);
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         HttpResponse response = httpclient.execute(new HttpGet(url));   // envoie de la requete
         StatusLine statusLine = response.getStatusLine();               // recupere la reponse
 
