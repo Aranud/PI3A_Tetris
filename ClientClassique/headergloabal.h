@@ -12,6 +12,7 @@
 #include <QQueue>
 
 #include <QPoint>
+#include <QColor>
 
 enum eTetromino
 {
