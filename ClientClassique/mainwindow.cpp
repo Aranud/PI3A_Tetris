@@ -5,28 +5,35 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 {
     ui->setupUi(this);
 
-    m_ptTimer = new QTimer(0);
-    m_ptTimer->setInterval(3000);
-
-    //m_pthThreadTimer = new QThread(this);
-    //m_ptTimer->moveToThread(m_pthThreadTimer);
-    connect(m_ptTimer, SIGNAL(timeout()), this, SLOT(slotAcquisition()));
-
-
     m_bConnectionEtablie = false;
     m_sNomConnection = "";
 
     m_pqnamManagerConnection = new QNetworkAccessManager(this);
     connect(m_pqnamManagerConnection, SIGNAL(finished(QNetworkReply*)), this, SLOT(slotOnConnection(QNetworkReply*)));
 
-    m_pqnamManagerPieces = new QNetworkAccessManager(this);
-    connect(m_pqnamManagerPieces, SIGNAL(finished(QNetworkReply*)), this, SLOT(slotOnReadyReadPieces(QNetworkReply*)));
+    m_pAnimation = NULL;
+    m_pPieceGetter = NULL;
+    m_pthThreadTimer = NULL;
+    m_pthThreadAnimation = NULL;
+
+    for(int iXIncrement = 0; iXIncrement < ui->qtwGrilleDeJeux->columnCount(); iXIncrement++)
+    {
+        for(int iYIncrement = 0; iYIncrement < ui->qtwGrilleDeJeux->rowCount(); iYIncrement++)
+        {
+            QTableWidgetItem *newItem = new QTableWidgetItem();
+            ui->qtwGrilleDeJeux->setItem(iYIncrement, iXIncrement, newItem);
+            ui->qtwGrilleDeJeux->item(iYIncrement, iXIncrement)->setBackgroundColor(Qt::white);
+        }
+    }
 }
 
 MainWindow::~MainWindow()
 {
-    if(m_pthThreadTimer->isRunning())
+    if(m_pthThreadTimer != NULL && m_pthThreadTimer->isRunning())
         m_pthThreadTimer->exit();
+
+    if(m_pthThreadAnimation != NULL && m_pthThreadAnimation->isRunning())
+        m_pthThreadAnimation->exit();
 
     delete ui;
 }
@@ -64,8 +71,15 @@ void MainWindow::slotOnConnection(QNetworkReply* p_pnrReponse)
             ui->label->setText(sReponse);
             ui->boutonConnection->setText("Deconnection");
             ui->lineEdit->setEnabled(false);
-            //m_pthThreadTimer->start();
-            m_ptTimer->start();
+
+            m_pPieceGetter = new PieceGetter(ui->lineEdit->text(), m_sNomConnection, 0);
+
+            connect(m_pPieceGetter, SIGNAL(pieceDisponible(QString)), this, SLOT(slotAnimation(QString)));
+
+            m_pthThreadTimer = new QThread(this);
+            m_pPieceGetter->moveToThread(m_pthThreadTimer);
+            m_pthThreadTimer->start();
+            m_pPieceGetter->startTimerAcquisition();
         }
         else
         {
@@ -74,65 +88,47 @@ void MainWindow::slotOnConnection(QNetworkReply* p_pnrReponse)
             ui->label->setText(sReponse);
             ui->boutonConnection->setText("Connection");
             ui->lineEdit->setEnabled(true);
-            //m_pthThreadTimer->exit();
-            m_ptTimer->stop();
+            m_pthThreadTimer->exit();
         }
     }
     else
         ui->label->setText(sReponse);
 }
 
-void MainWindow::slotAcquisition()
+void MainWindow::slotAnimation(QString p_sPiece)
 {
-    QUrl url;
-    url.setUrl("http://" + ui->lineEdit->text() + "/obtenir_pieces");
+    if(p_sPiece == "I")
+        m_qFIFOTetromino.append(new Tetromino(eTetrominoI));
+    else if(p_sPiece == "T")
+        m_qFIFOTetromino.append(new Tetromino(eTetrominoT));
+    else if(p_sPiece == "O")
+        m_qFIFOTetromino.append(new Tetromino(eTetrominoO));
+    else if(p_sPiece == "J")
+        m_qFIFOTetromino.append(new Tetromino(eTetrominoJ));
+    else if(p_sPiece == "L")
+        m_qFIFOTetromino.append(new Tetromino(eTetrominoL));
+    else if(p_sPiece == "S")
+        m_qFIFOTetromino.append(new Tetromino(eTetrominoS));
+    else if(p_sPiece == "Z")
+        m_qFIFOTetromino.append(new Tetromino(eTetrominoZ));
+    else
+        return;
 
-    QByteArray baParameter;
-    baParameter.append("nom_client=" + m_sNomConnection);
-    qDebug() << baParameter;
-    m_pqnamManagerPieces->post(QNetworkRequest(url), baParameter);
-}
-
-void MainWindow::slotOnReadyReadPieces(QNetworkReply *p_pnrReponse)
-{
-    QVariant statusCode = p_pnrReponse->attribute(QNetworkRequest::HttpStatusCodeAttribute);
-    QString sReponse = p_pnrReponse->readAll();
-
-    if(statusCode.isValid())
+    if(m_pAnimation == NULL)
     {
-        ui->labelPiecesRecu->setText(sReponse);
-
-        if(sReponse.length() == 1)
-        {
-            if(sReponse == "I")
-                m_qFIFOTetromino.append(new Tetromino(eTetrominoI));
-            else if(sReponse == "T")
-                m_qFIFOTetromino.append(new Tetromino(eTetrominoT));
-            else if(sReponse == "O")
-                m_qFIFOTetromino.append(new Tetromino(eTetrominoO));
-            else if(sReponse == "J")
-                m_qFIFOTetromino.append(new Tetromino(eTetrominoJ));
-            else if(sReponse == "L")
-                m_qFIFOTetromino.append(new Tetromino(eTetrominoL));
-            else if(sReponse == "S")
-                m_qFIFOTetromino.append(new Tetromino(eTetrominoS));
-            else if(sReponse == "Z")
-                m_qFIFOTetromino.append(new Tetromino(eTetrominoZ));
-        }
+        m_pAnimation = new Animation(ui, 0);
+        m_pthThreadAnimation = new QThread(this);
+        m_pAnimation->moveToThread(m_pthThreadAnimation);
+        m_pthThreadAnimation->start();
+        m_pAnimation->startTimerAnimation(m_qFIFOTetromino.dequeue());
+        connect(m_pAnimation, SIGNAL(signalStop()), this, SLOT(slotStopAnimation()));
     }
 }
 
-void MainWindow::on_boutonGauche_clicked()
+void MainWindow::slotStopAnimation()
 {
-
-}
-
-void MainWindow::on_boutonBas_clicked()
-{
-
-}
-
-void MainWindow::on_boutonDroite_clicked()
-{
-
+    if(m_qFIFOTetromino.isEmpty())
+        m_pthThreadAnimation->exit();
+    else
+       m_pAnimation->startTimerAnimation(m_qFIFOTetromino.dequeue());
 }
