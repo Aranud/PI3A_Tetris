@@ -83,7 +83,6 @@ def obtenir_pieces():
 ######################
 
 @app.route('/login_client_mobile', methods=['GET']) # Permet les connection du client mobile
-
 def login_client_mobile():
     if request.method == 'GET':                 # (double protection des method d'envoie)
         if len(ListClientClassique) > 0:   # Si il ny a pas de client classique aucun test nest effecute
