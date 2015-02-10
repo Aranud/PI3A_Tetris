@@ -1,13 +1,28 @@
 #/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-from flask import Flask, session, request, escape, redirect, make_response, render_template, url_for
-import os
+import uuid, sys, os
 from Queue import *
-import socket
-app = Flask(__name__)
 
+from twisted.python import log
+from twisted.internet import reactor
+from twisted.web.server import Site
+from twisted.web.wsgi import WSGIResource
+
+from flask import Flask, session, request, escape, redirect, make_response, render_template, url_for
+
+from autobahn.twisted.websocket import WebSocketServerFactory, \
+                                       WebSocketServerProtocol
+
+from autobahn.twisted.resource import WebSocketResource, \
+                                      WSGIRootResource, \
+                                      HTTPChannelHixie76Aware
+
+#################################################################
+
+app = Flask(__name__)
 # set the secret key.  keep this really secret:
+app.secret_key = str(uuid.uuid4())
 #app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 #app.secret_key = os.urandom(24)                     # Generation d'une cle secret aleatoire (utilise pour les sessions)
 
@@ -17,12 +32,33 @@ ListClientClassique = []         # Contient la liste des utlisateur
 increment = [0]                 # Increment des clients classiques
 
 class ClientClassique:          # Definir un client classique et si un client mobile lui est affecte
-    def __init__(self, nom):
-        self.nom = nom              # nom du client classique
+    def __init__(self, identifiant, client):
+        self.identifiant = identifiant
+        self.client = client        # contient la reference vers la web socket du client classique
         self.controleur = False     # indique si un controleur lui est affecte
-        self.fifoPieces = Queue()   # Contient les pieces pour le client classique
 
-##########
+## Protocole du Server pour les WebSocket 
+class ServerProtocol(WebSocketServerProtocol):
+
+   def onMessage(self, payload, isBinary):
+      self.sendMessage(payload, isBinary)
+
+   def onConnect(self, request):
+      print("Client connecting: {}".format(request.peer))
+
+   def onOpen(self):
+      print("WebSocket connection open.")
+      ListClientClassique.append(ClientClassique(increment[0], self))
+      increment[0] += 1
+      print(ListClientClassique[0].identifiant)
+
+   def onClose(self, wasClean, code, reason):
+      print("WebSocket connection closed: {}".format(reason))
+      for clientClassique in ListClientClassique:     # Recherche le client classique
+            if clientClassique.client == self:       # Si le client classique correspond
+                ListClientClassique.remove(clientClassique) # Suppression de l'utilisateur de la liste
+
+######################################################
 
 #Gere les erreur 400, 401, 403, 404, 405 500
 @app.errorhandler(400)
@@ -37,51 +73,6 @@ def ma_page_erreur(error):
 
 ########################
 
-@app.route('/login_client_classique', methods=['GET'])  # Permet les connection du client classique
-def login_client_classique():
-#    if request.method == 'POST':                
-#        session['nom'] = request.form['nom']
-#        if 'nom' in session:
-#            ListClientClassique.append(ClientClassique('nom'))
-#            return 'Connecte comme -->%s' % escape(session['nom'])
-#        else:
-#            return 'Vous n etes pas connecte'
-    if request.method == 'GET':                             # (double protection des method d'envoie)
-        nom = 'client' + `increment[0]`                     # Creation d'un nom d'utilisateur
-        increment[0] += 1                                   # Incremente le compteur des clients classique s
-        ListClientClassique.append(ClientClassique(nom))    # Ajout du nouveau client a la liste des client classique
-        return nom, 200                                     # Renvoie le nom de l'utilisateur
-    else:
-        return 'Erreur : La requete doit etre de type GET', 405 # Mauvaise methode de requete (double protection)
-
-@app.route('/logout_client_classique', methods=['POST'])    # Permet les deconnection du client classique
-
-def logout_client_classique():
-    if request.method == 'POST':                        # (double protection des method d'envoie)
-        nom_client = request.form['nom_client']         # Recupere le nom de l'utilisateur
-        for clientClassique in ListClientClassique:     # Recherche le client classique
-            if clientClassique.nom == nom_client:       # Si le client classique correspond
-                ListClientClassique.remove(clientClassique) # Suppression de l'utilisateur de la liste
-                return 'Deconnecte', 200                                  # Renvoie la confirmation de la deconnection
-        return 'Client Classique inconnu, Deconnecte', 200       # Le client est deja deconnecte ou est inexistant
-    else:
-        return 'Erreur : La requete doit etre de type GET', 405 # Mauvaise methode de requete
-
-@app.route('/obtenir_pieces', methods=['POST']) # Permet au client classique de recupere les Tetromino
-def obtenir_pieces():
-    if request.method == 'POST':                    # (double protection des method d'envoie)
-        for clientClassique in ListClientClassique: # Recherche le client classique
-            if clientClassique.nom == request.form['nom_client']: # Si le client classique correspond
-                if clientClassique.fifoPieces.empty() == False:  # Si la liste n'est pas vide
-                    return clientClassique.fifoPieces.get(), 200 # Renvoie la pieces la plus anciennes
-                else:
-                    return "", 200   # Aucune piece disponible pour le moment
-        return 'Client Classique inconnue', 204      # Le nom envoyer nest pas reconnue
-    else:
-        return 'Erreur : La requete doit etre de type POST', 405 # Mauvaise methode de requete
-
-######################
-
 @app.route('/login_client_mobile', methods=['GET']) # Permet les connection du client mobile
 def login_client_mobile():
     if request.method == 'GET':                 # (double protection des method d'envoie)
@@ -89,7 +80,7 @@ def login_client_mobile():
             for clientClassique in ListClientClassique:   # Parcour les client classique
                 if clientClassique.controleur == False:   # Si le client classique nest pas associe a un client mobile 
                     ListClientClassique[ListClientClassique.index(clientClassique)].controleur = True # On confirme une association
-                    return clientClassique.nom, 200        # Renvoie le nom du client
+                    return "%d" % clientClassique.identifiant, 200        # Renvoie le nom du client
             return 'Tout les clients sont occupes', 204     # Il n'y a pas de client disponible
         else:
             return 'Aucun client present', 204    # Il n'y a pas de client connecte
@@ -101,7 +92,7 @@ def logout_client_mobile():
     if request.method == 'POST':                # (double protection des method d'envoie)
         nom_client = request.form['nom_client']         # Recupere le nom du client classique
         for clientClassique in ListClientClassique:     # Recherche le client classique
-            if clientClassique.nom == nom_client:       # Si le nom correspond
+            if str(clientClassique.identifiant) == nom_client:       # Si le nom correspond
                 ListClientClassique[ListClientClassique.index(clientClassique)].controleur = False  # Indique que le client classique na plus de client mobile associe
                 return 'Deconnecte', 200                  # Renvoie la confirmation de la deconnection
         return 'Client Classique inconnu, Deconnecte', 200  # Le client est deja deconnecte ou est inexistant
@@ -113,9 +104,10 @@ def envoie_piece():
     if request.method == 'POST':                    # Si il s'agit bien d'une requete POST
         piece = request.form['piece']               # Recupere le Tetromino envoye
         nom_client = request.form['nom_client']     # Recupere le nom du client auquel l'on souhaite fournir le Tetromino
+        print(nom_client)
         for clientClassique in ListClientClassique: # Recherche du client classique correspondant au nom
-            if clientClassique.nom == nom_client:   # Si le nom correspond
-                clientClassique.fifoPieces.put(piece)   # Ajoute le tetromino a la liste de pieces du client classique
+            if str(clientClassique.identifiant) == nom_client:   # Si le nom correspond
+                clientClassique.client.sendMessage(piece.encode(encoding='UTF-8'), False)
                 return 'OK Tetromino : ' + piece, 200   # Renvoie message succes
         return 'Client Classique non trouve', 400        # Le client classique na pas ete trouve
     else:
@@ -124,5 +116,39 @@ def envoie_piece():
 ######################
 
 if __name__ == '__main__':
-    app.debug = True        # Lance l'application en mode debug
-    app.run()               # Permet l'execution de l'application
+   if len(sys.argv) > 1 and sys.argv[1] == 'debug':
+      log.startLogging(sys.stdout)
+      debug = True
+   else:
+      debug = False
+   debug = True
+
+   app.debug = debug
+   if debug:
+      log.startLogging(sys.stdout)
+
+   ## create a Twisted Web resource for our WebSocket server
+   wsFactory = WebSocketServerFactory("ws://localhost:8080",
+                                      debug = debug,
+                                      debugCodePaths = debug)
+
+   wsFactory.protocol = ServerProtocol
+   wsFactory.setProtocolOptions(allowHixie76 = True) # needed if Hixie76 is to be supported
+
+   wsResource = WebSocketResource(wsFactory)
+
+   ## create a Twisted Web WSGI resource for our Flask server
+   wsgiResource = WSGIResource(reactor, reactor.getThreadPool(), app)
+
+   ## create a root resource serving everything via WSGI/Flask, but
+   ## the path "/ws" served by our WebSocket stuff
+   rootResource = WSGIRootResource(wsgiResource, {'ws': wsResource})
+
+   
+   ## create a Twisted Web Site and run everything
+   site = Site(rootResource)
+   site.protocol = HTTPChannelHixie76Aware # needed if Hixie76 is to be supported
+
+   reactor.listenTCP(8080, site)
+   reactor.run()                    # Lance l'application avec ecoute sur WebSocket
+
