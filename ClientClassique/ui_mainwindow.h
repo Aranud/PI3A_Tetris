@@ -215,7 +215,7 @@ public:
         actionTest->setText(QApplication::translate("MainWindow", "Exit", 0));
         actionNouvelle_Partie->setText(QApplication::translate("MainWindow", "Nouvelle Partie", 0));
         label_4->setText(QApplication::translate("MainWindow", "Adresse Du Serveur", 0));
-        lineEdit->setText(QApplication::translate("MainWindow", "localhost:5000", 0));
+        lineEdit->setText(QApplication::translate("MainWindow", "localhost:8080", 0));
         boutonConnection->setText(QApplication::translate("MainWindow", "Connection", 0));
         label->setText(QApplication::translate("MainWindow", "(Indique si le client est connecte)", 0));
         labelPiecesRecu->setText(QString());

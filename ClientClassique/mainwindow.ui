@@ -133,7 +133,7 @@
        <item>
         <widget class="QLineEdit" name="lineEdit">
          <property name="text">
-          <string>localhost:5000</string>
+          <string>localhost:8080</string>
          </property>
         </widget>
        </item>

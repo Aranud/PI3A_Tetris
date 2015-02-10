@@ -5,6 +5,7 @@
 #include <QUrl>
 #include <QNetworkRequest>
 #include <QNetworkReply>
+#include <QWebsocket>
 
 #include <QTimer>
 #include <QQueue>

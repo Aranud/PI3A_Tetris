@@ -16,12 +16,10 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    piecegetter.cpp \
     tetromino.cpp \
     animation.cpp
 
 HEADERS  += mainwindow.h \
-    piecegetter.h \
     tetromino.h \
     headergloabal.h \
     animation.h
