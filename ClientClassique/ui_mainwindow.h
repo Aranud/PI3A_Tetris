@@ -53,6 +53,7 @@ public:
     QPushButton *boutonBas;
     QPushButton *boutonRotDroite;
     QPushButton *boutonRotGauche;
+    QPushButton *boutonDescDirect;
     QMenuBar *menuBar;
     QMenu *menuPI3A_Tetris;
     QToolBar *mainToolBar;
@@ -182,6 +183,11 @@ public:
 
         gridLayout->addWidget(boutonRotGauche, 1, 0, 1, 1);
 
+        boutonDescDirect = new QPushButton(qvfFrameGauche);
+        boutonDescDirect->setObjectName(QStringLiteral("boutonDescDirect"));
+
+        gridLayout->addWidget(boutonDescDirect, 1, 1, 1, 1);
+
 
         verticalLayout->addLayout(gridLayout);
 
@@ -225,6 +231,7 @@ public:
         boutonBas->setText(QApplication::translate("MainWindow", "Bas", 0));
         boutonRotDroite->setText(QApplication::translate("MainWindow", "Rot. Droite", 0));
         boutonRotGauche->setText(QApplication::translate("MainWindow", "Rot. Gauche", 0));
+        boutonDescDirect->setText(QApplication::translate("MainWindow", "Desc. Direct", 0));
         menuPI3A_Tetris->setTitle(QApplication::translate("MainWindow", "Menu", 0));
     } // retranslateUi
 

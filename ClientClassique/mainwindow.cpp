@@ -55,6 +55,7 @@ void MainWindow::ActivationInterface(bool p_bActivation)
     ui->boutonGauche->setEnabled(p_bActivation);
     ui->boutonRotDroite->setEnabled(p_bActivation);
     ui->boutonRotGauche->setEnabled(p_bActivation);
+    ui->boutonDescDirect->setEnabled(p_bActivation);
 
     if(p_bActivation == true)
         ui->boutonConnection->setText("Deconnection");
@@ -125,6 +126,7 @@ void MainWindow::slotOnWebSocketClosed()
         m_bConnectionEtablie = false;   // La connection n'est plus etablie
         ActivationInterface(false);
         m_pthThreadAnimation->exit();
+        ui->labelScore->setText(0);
     }
 }
 

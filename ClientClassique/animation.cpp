@@ -22,6 +22,7 @@ Animation::Animation(Ui::MainWindow *p_pUi, QObject* parent) :
     connect(p_pUi->boutonRotDroite, SIGNAL(clicked()), this, SLOT(slotRotationDroiteTetromino()));
     connect(p_pUi->boutonRotGauche, SIGNAL(clicked()), this, SLOT(slotRotationGaucheTetromino()));
     connect(p_pUi->boutonBas, SIGNAL(clicked()), this, SLOT(slotDescenteTetromino()));
+    connect(p_pUi->boutonDescDirect, SIGNAL(clicked()), this, SLOT(slotDescenteDirectTetromino()));
 
     connect(this, SIGNAL(signalStop()), this, SLOT(slotTestLigne()));
 
@@ -244,6 +245,18 @@ void Animation::slotRotationGaucheTetromino()
         Mouvement(eActionTetrominoRotationGauche, false);
 }
 
+void Animation::slotDescenteDirectTetromino()
+{
+    if(m_pTetromino)
+    {
+        while(Mouvement(eActionTetrominoDirectionDescente, true))   // Tant que le mouvement reussie
+        {
+            int iPoint = POINT_DESCENTE_AUTO + m_pUi->labelScore->text().toInt();
+            m_pUi->labelScore->setText(QString::number(iPoint));
+        }
+    }
+}
+
 /************************************************************************************************/
 /*********************************** GESTION SCORE  *********************************************/
 /************************************************************************************************/
@@ -274,12 +287,10 @@ void Animation::slotTestLigne()
                 QTableWidgetItem *newItem = new QTableWidgetItem();
                 m_pUi->qtwGrilleDeJeux->setItem(0, iIncrement, newItem);
                 m_pUi->qtwGrilleDeJeux->item(0, iIncrement)->setBackgroundColor(Qt::white);
-
-                int iPoint = (POINT_DESCENTE_AUTO + m_pUi->labelScore->text().toInt());
-                iPoint *= iLigneComplete;
-                m_pUi->labelScore->setText(QString::number(iPoint));
-                iLigneComplete++;
             }
+            int iPoint = (POINT_LIGNE * iLigneComplete) + m_pUi->labelScore->text().toInt();
+            m_pUi->labelScore->setText(QString::number(iPoint));
+            iLigneComplete++;
         }
     }
 }

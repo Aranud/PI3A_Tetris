@@ -38,11 +38,12 @@ private slots:
     void slotTimerTickActif();
 
     void slotDescenteTetromino();
-    //void slotDescenteAutoTetromino();
     void slotDecalageDroiteTetromino();
     void slotDecalageGaucheTetromino();
     void slotRotationDroiteTetromino();
     void slotRotationGaucheTetromino();
+    void slotDescenteDirectTetromino();
+
     void slotTestLigne();
 
 signals:
