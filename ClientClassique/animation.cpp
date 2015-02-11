@@ -1,4 +1,5 @@
 #include "animation.h"
+#include <QKeyEvent>
 
 Animation::Animation(Ui::MainWindow *p_pUi, QObject* parent) :
     QObject(parent)
@@ -17,12 +18,12 @@ Animation::Animation(Ui::MainWindow *p_pUi, QObject* parent) :
     m_ptTimer->setInterval(TIMER_DESCENTE);
     connect(m_ptTimer, SIGNAL(timeout()), this, SLOT(slotTimerTickActif()));
 
-    connect(p_pUi->boutonDroite, SIGNAL(clicked()), this, SLOT(slotDecalageDroiteTetromino()));
-    connect(p_pUi->boutonGauche, SIGNAL(clicked()), this, SLOT(slotDecalageGaucheTetromino()));
-    connect(p_pUi->boutonRotDroite, SIGNAL(clicked()), this, SLOT(slotRotationDroiteTetromino()));
-    connect(p_pUi->boutonRotGauche, SIGNAL(clicked()), this, SLOT(slotRotationGaucheTetromino()));
-    connect(p_pUi->boutonBas, SIGNAL(clicked()), this, SLOT(slotDescenteTetromino()));
-    connect(p_pUi->boutonDescDirect, SIGNAL(clicked()), this, SLOT(slotDescenteDirectTetromino()));
+    connect(m_pUi->boutonDroite, SIGNAL(clicked()), this, SLOT(slotDecalageDroiteTetromino()));
+    connect(m_pUi->boutonGauche, SIGNAL(clicked()), this, SLOT(slotDecalageGaucheTetromino()));
+    connect(m_pUi->boutonRotDroite, SIGNAL(clicked()), this, SLOT(slotRotationDroiteTetromino()));
+    connect(m_pUi->boutonRotGauche, SIGNAL(clicked()), this, SLOT(slotRotationGaucheTetromino()));
+    connect(m_pUi->boutonBas, SIGNAL(clicked()), this, SLOT(slotDescenteTetromino()));
+    connect(m_pUi->boutonDescDirect, SIGNAL(clicked()), this, SLOT(slotDescenteDirectTetromino()));
 
     connect(this, SIGNAL(signalStop()), this, SLOT(slotTestLigne()));
 
@@ -33,6 +34,12 @@ Animation::~Animation()
 {
     if(m_pTetromino)
         delete(m_pTetromino);
+
+    if(m_pmMutex)
+        delete(m_pmMutex);
+
+    if(m_ptTimer)
+        m_ptTimer->deleteLater();
 }
 
 void Animation::slotTimerTickActif()
