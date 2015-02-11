@@ -11,6 +11,6 @@
     <string name="buttonTetrominoZ">Z</string>
     <string name="buttonConnexion">Connexion</string>
     <string name="textView">Connectez vous pour choisir les pièces à envoyer</string>
-    <string name="adresseServeur">10.0.2.2:5000</string>
+    <string name="adresseServeur">10.0.2.2:8080</string>
     <string name="buttonConnection">Connection</string>
 </resources>

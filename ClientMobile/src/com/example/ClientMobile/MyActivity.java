@@ -254,7 +254,7 @@ public class MyActivity extends Activity {
             String responseString = out.toString();
 
 
-            zoneDeTexte.setText(responseString);    // Affichage le resultat de la connection
+            zoneDeTexte.setText("ClientClassique : " + responseString);    // Affichage le resultat de la connection
             nomClientClassique = responseString;
             connectionEtablie = true;
             boutonConnection.setText("Deconnection");
@@ -295,7 +295,7 @@ public class MyActivity extends Activity {
             HttpResponse response = httpclient.execute(httppost);
             StatusLine statusLine = response.getStatusLine();
 
-            // Si la requete a bine etati recu est comprise
+            // Si la requete a bien etait recu est comprise
             if(statusLine.getStatusCode() == HttpStatus.SC_OK || statusLine.getStatusCode() == HttpStatus.SC_NO_CONTENT){
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 response.getEntity().writeTo(out);
