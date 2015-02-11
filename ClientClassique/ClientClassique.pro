@@ -5,7 +5,6 @@
 #-------------------------------------------------
 
 QT  += core gui
-QT  += network
 QT  += websockets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -17,11 +16,15 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     tetromino.cpp \
-    animation.cpp
+    animation.cpp \
+    clientwebsocket.cpp \
+    fifopieces.cpp
 
 HEADERS  += mainwindow.h \
     tetromino.h \
     headergloabal.h \
-    animation.h
+    animation.h \
+    clientwebsocket.h \
+    fifopieces.h
 
 FORMS    += mainwindow.ui

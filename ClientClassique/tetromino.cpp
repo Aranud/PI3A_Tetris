@@ -43,7 +43,7 @@ Tetromino::Tetromino(eTetromino p_eTetromino, QObject* parent) :
             m_lpListPoint.append(QPoint(-1, 0));
             m_lpListPoint.append(QPoint(1, 0));
             m_lpListPoint.append(QPoint(-1, 1));
-            m_cColor = Qt::black;
+            m_cColor = QColor(255, 127, 0);
         break;
         case eTetrominoS:
             m_lpListPoint.append(QPoint(0, 0));
@@ -95,28 +95,25 @@ void Tetromino::setColor(const QColor &cColor)
     m_cColor = cColor;
 }
 
-// Permet la rotation a droite
-void Tetromino::RotationDroite()
-{
-    Rotation(1);
-}
-
-// Permet la rotation a gauche
-void Tetromino::RotationGauche()
-{
-    Rotation(-1);
-}
-
 // Gestion des rotation du tetromino en fonction de sont Etat et de son type
-void Tetromino::Rotation(int p_iValue)
+void Tetromino::Rotation(eActionTetromino p_eActionTetrominoRotation)
 {
     QList<QPoint> lpListPoint;
+    lpListPoint.clear();
+    int iRotationValue = 0;
+
+    if(p_eActionTetrominoRotation == eActionTetrominoRotationDroite)
+        iRotationValue = 1;
+    else if (p_eActionTetrominoRotation == eActionTetrominoRotationGauche)
+        iRotationValue = -1;
+    else
+        return;
 
     switch(m_eTetrimino)
     {
         case eTetrominoI:
         {
-            if(m_eEtatTetromino + p_iValue > 1 || m_eEtatTetromino + p_iValue == 0)
+            if(m_eEtatTetromino + iRotationValue > 1 || m_eEtatTetromino + iRotationValue == 0)
             {
                 m_eEtatTetromino = eEtatTetromino0;
                 lpListPoint.append(QPoint(-1, 0));
@@ -124,7 +121,7 @@ void Tetromino::Rotation(int p_iValue)
                 lpListPoint.append(QPoint(1, 0));
                 lpListPoint.append(QPoint(2, 0));
             }
-            else if(m_eEtatTetromino + p_iValue < 0 || m_eEtatTetromino + p_iValue == 1)
+            else if(m_eEtatTetromino + iRotationValue < 0 || m_eEtatTetromino + iRotationValue == 1)
             {
                 m_eEtatTetromino = eEtatTetromino1;
                 lpListPoint.append(QPoint(0, 0));
@@ -141,7 +138,7 @@ void Tetromino::Rotation(int p_iValue)
         }
         case eTetrominoT:
         {
-            if(m_eEtatTetromino + p_iValue > 3 || m_eEtatTetromino + p_iValue == 0)
+            if(m_eEtatTetromino + iRotationValue > 3 || m_eEtatTetromino + iRotationValue == 0)
             {
                 m_eEtatTetromino = eEtatTetromino0;
                 lpListPoint.append(QPoint(0, 0));
@@ -149,7 +146,7 @@ void Tetromino::Rotation(int p_iValue)
                 lpListPoint.append(QPoint(0, 1));
                 lpListPoint.append(QPoint(1, 1));
             }
-            else if(m_eEtatTetromino + p_iValue == 1)
+            else if(m_eEtatTetromino + iRotationValue == 1)
             {
                 m_eEtatTetromino = eEtatTetromino1;
                 lpListPoint.append(QPoint(0, 0));
@@ -157,7 +154,7 @@ void Tetromino::Rotation(int p_iValue)
                 lpListPoint.append(QPoint(0, 1));
                 lpListPoint.append(QPoint(1, 1));
             }
-            else if(m_eEtatTetromino + p_iValue == 2)
+            else if(m_eEtatTetromino + iRotationValue == 2)
             {
                 m_eEtatTetromino = eEtatTetromino2;
                 lpListPoint.append(QPoint(0, 0));
@@ -165,7 +162,7 @@ void Tetromino::Rotation(int p_iValue)
                 lpListPoint.append(QPoint(-1, 0));
                 lpListPoint.append(QPoint(1, 0));
             }
-            else if(m_eEtatTetromino + p_iValue < 0 || m_eEtatTetromino + p_iValue == 3)
+            else if(m_eEtatTetromino + iRotationValue < 0 || m_eEtatTetromino + iRotationValue == 3)
             {
                 m_eEtatTetromino = eEtatTetromino3;
                 lpListPoint.append(QPoint(-1, 1));
@@ -177,7 +174,7 @@ void Tetromino::Rotation(int p_iValue)
         }
         case eTetrominoJ:
         {
-            if(m_eEtatTetromino + p_iValue > 3 || m_eEtatTetromino + p_iValue == 0)
+            if(m_eEtatTetromino + iRotationValue > 3 || m_eEtatTetromino + iRotationValue == 0)
             {
                 m_eEtatTetromino = eEtatTetromino0;
                 lpListPoint.append(QPoint(0, 0));
@@ -185,7 +182,7 @@ void Tetromino::Rotation(int p_iValue)
                 lpListPoint.append(QPoint(1, 0));
                 lpListPoint.append(QPoint(1, 1));
             }
-            else if(m_eEtatTetromino + p_iValue == 1)
+            else if(m_eEtatTetromino + iRotationValue == 1)
             {
                 m_eEtatTetromino = eEtatTetromino1;
                 lpListPoint.append(QPoint(0, 0));
@@ -193,7 +190,7 @@ void Tetromino::Rotation(int p_iValue)
                 lpListPoint.append(QPoint(0, 2));
                 lpListPoint.append(QPoint(-1, 2));
             }
-            else if(m_eEtatTetromino + p_iValue == 2)
+            else if(m_eEtatTetromino + iRotationValue == 2)
             {
                 m_eEtatTetromino = eEtatTetromino2;
                 lpListPoint.append(QPoint(-1, 1));
@@ -202,7 +199,7 @@ void Tetromino::Rotation(int p_iValue)
                 lpListPoint.append(QPoint(1, 1));
 
             }
-            else if(m_eEtatTetromino + p_iValue < 0 || m_eEtatTetromino + p_iValue == 3)
+            else if(m_eEtatTetromino + iRotationValue < 0 || m_eEtatTetromino + iRotationValue == 3)
             {
                 m_eEtatTetromino = eEtatTetromino3;
                 lpListPoint.append(QPoint(0, 0));
@@ -215,7 +212,7 @@ void Tetromino::Rotation(int p_iValue)
         }
         case eTetrominoL:
         {
-            if(m_eEtatTetromino + p_iValue > 3 || m_eEtatTetromino + p_iValue == 0)
+            if(m_eEtatTetromino + iRotationValue > 3 || m_eEtatTetromino + iRotationValue == 0)
             {
                 m_eEtatTetromino = eEtatTetromino0;
                 lpListPoint.append(QPoint(0, 0));
@@ -223,7 +220,7 @@ void Tetromino::Rotation(int p_iValue)
                 lpListPoint.append(QPoint(1, 0));
                 lpListPoint.append(QPoint(-1, 1));
             }
-            else if(m_eEtatTetromino + p_iValue == 1)
+            else if(m_eEtatTetromino + iRotationValue == 1)
             {
                 m_eEtatTetromino = eEtatTetromino1;
                 lpListPoint.append(QPoint(0, 0));
@@ -231,7 +228,7 @@ void Tetromino::Rotation(int p_iValue)
                 lpListPoint.append(QPoint(0, 1));
                 lpListPoint.append(QPoint(0, 2));
             }
-            else if(m_eEtatTetromino + p_iValue == 2)
+            else if(m_eEtatTetromino + iRotationValue == 2)
             {
                 m_eEtatTetromino = eEtatTetromino2;
                 lpListPoint.append(QPoint(1, 0));
@@ -239,7 +236,7 @@ void Tetromino::Rotation(int p_iValue)
                 lpListPoint.append(QPoint(0, 1));
                 lpListPoint.append(QPoint(1, 1));
             }
-            else if(m_eEtatTetromino + p_iValue < 0 || m_eEtatTetromino + p_iValue == 3)
+            else if(m_eEtatTetromino + iRotationValue < 0 || m_eEtatTetromino + iRotationValue == 3)
             {
                 m_eEtatTetromino = eEtatTetromino3;
                 lpListPoint.append(QPoint(0, 0));
@@ -251,7 +248,7 @@ void Tetromino::Rotation(int p_iValue)
         }
         case eTetrominoS:
         {
-            if(m_eEtatTetromino + p_iValue > 1 || m_eEtatTetromino + p_iValue == 0)
+            if(m_eEtatTetromino + iRotationValue > 1 || m_eEtatTetromino + iRotationValue == 0)
             {
                 m_eEtatTetromino = eEtatTetromino0;
                 lpListPoint.append(QPoint(0, 0));
@@ -259,7 +256,7 @@ void Tetromino::Rotation(int p_iValue)
                 lpListPoint.append(QPoint(0, 1));
                 lpListPoint.append(QPoint(-1, 1));
             }
-            else if(m_eEtatTetromino + p_iValue < 0 || m_eEtatTetromino + p_iValue == 1)
+            else if(m_eEtatTetromino + iRotationValue < 0 || m_eEtatTetromino + iRotationValue == 1)
             {
                 m_eEtatTetromino = eEtatTetromino1;
                 lpListPoint.append(QPoint(0, 0));
@@ -271,7 +268,7 @@ void Tetromino::Rotation(int p_iValue)
         }
         case eTetrominoZ:
         {
-            if(m_eEtatTetromino + p_iValue > 1 || m_eEtatTetromino + p_iValue == 0)
+            if(m_eEtatTetromino + iRotationValue > 1 || m_eEtatTetromino + iRotationValue == 0)
             {
                 m_eEtatTetromino = eEtatTetromino0;
                 lpListPoint.append(QPoint(0, 0));
@@ -279,7 +276,7 @@ void Tetromino::Rotation(int p_iValue)
                 lpListPoint.append(QPoint(0, 1));
                 lpListPoint.append(QPoint(-1, 1));
             }
-            else if(m_eEtatTetromino + p_iValue < 0 || m_eEtatTetromino + p_iValue == 1)
+            else if(m_eEtatTetromino + iRotationValue < 0 || m_eEtatTetromino + iRotationValue == 1)
             {
                 m_eEtatTetromino = eEtatTetromino1;
                 lpListPoint.append(QPoint(0, 1));

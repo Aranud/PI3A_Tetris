@@ -19,13 +19,16 @@
 #define POINT_LIGNE 10
 #define POINT_DESCENTE 5
 #define POINT_DESCENTE_AUTO 1
+#define TIMER_DESCENTE 1000
 
-enum eDirection
+enum eActionTetromino
 {
-    eDirectionActuel,
-    eDirectionGauche,
-    eDirectionDroite,
-    eDirectionDescente
+    eActionTetrominoDirectionActuel,
+    eActionTetrominoDirectionGauche,
+    eActionTetrominoDirectionDroite,
+    eActionTetrominoDirectionDescente,
+    eActionTetrominoRotationGauche,
+    eActionTetrominoRotationDroite
 };
 
 enum eEtatTetromino

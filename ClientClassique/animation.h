@@ -5,6 +5,7 @@
 #include "ui_mainwindow.h"
 
 #include "tetromino.h"
+#include "fifopieces.h"
 
 class Animation: public QObject
 {
@@ -12,26 +13,32 @@ class Animation: public QObject
 public:
     Animation(Ui::MainWindow* p_pUi, QObject* parent = 0);
     ~Animation();
-    void startTimerAnimation(Tetromino* p_pTetromino);
+    //void startTimerAnimation();
 
 private:
     Ui::MainWindow* m_pUi;
     Tetromino* m_pTetromino;
     QTimer* m_ptTimer;
     QMutex* m_pmMutex;
+    FIFOPieces* m_qFIFOTetromino;
 
     int m_iXOrigine;
     int m_iYOrigine;
 
-    bool Mouvement(eDirection p_eDirection, bool p_iDescenteAuto);
+    bool Mouvement(eActionTetromino p_eDirection, bool p_iDescenteAuto);
+    bool TestMouvement(int p_iXOffset, int p_iYOffset);
     void NetoyagePosition();
     void AffichagePosition(int p_iXOffset, int p_iYOffset);
+
+    void DescenteAutoTetromino();
 
 public slots:
 
 private slots:
+    void slotTimerTickActif();
+
     void slotDescenteTetromino();
-    void slotDescenteAutoTetromino();
+    //void slotDescenteAutoTetromino();
     void slotDecalageDroiteTetromino();
     void slotDecalageGaucheTetromino();
     void slotRotationDroiteTetromino();
