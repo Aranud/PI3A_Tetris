@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file alias="ICON_TETROMINO_I">res/icon/tetromino_i.png</file>
+        <file alias="ICON_TETROMINO_J">res/icon/tetromino_j.png</file>
+        <file alias="ICON_TETROMINO_L">res/icon/tetromino_l.png</file>
+        <file alias="ICON_TETROMINO_O">res/icon/tetromino_o.png</file>
+        <file alias="ICON_TETROMINO_S">res/icon/tetromino_s.png</file>
+        <file alias="ICON_TETROMINO_T">res/icon/tetromino_t.png</file>
+        <file alias="ICON_TETROMINO_Z">res/icon/tetromino_z.png</file>
+    </qresource>
+</RCC>

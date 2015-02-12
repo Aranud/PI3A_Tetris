@@ -15,6 +15,7 @@
 #include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QFrame>
 #include <QtWidgets/QGridLayout>
+#include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
@@ -40,12 +41,15 @@ public:
     QFrame *qvfFrameGauche;
     QVBoxLayout *verticalLayout;
     QVBoxLayout *qvblFenetreSuperieur;
-    QLabel *label_4;
+    QLabel *labelAdresseServeur;
     QLineEdit *lineEdit;
     QPushButton *boutonConnection;
-    QLabel *label;
+    QLabel *labelEtatConnection;
     QVBoxLayout *qvblFenetreInferieur;
-    QLabel *labelPiecesRecu;
+    QHBoxLayout *horizontalLayout;
+    QLabel *labelPiecesRecu1;
+    QLabel *labelPiecesRecu2;
+    QLabel *labelPiecesRecu3;
     QLabel *labelScore;
     QGridLayout *gridLayout;
     QPushButton *boutonGauche;
@@ -106,10 +110,10 @@ public:
         qvblFenetreSuperieur = new QVBoxLayout();
         qvblFenetreSuperieur->setSpacing(6);
         qvblFenetreSuperieur->setObjectName(QStringLiteral("qvblFenetreSuperieur"));
-        label_4 = new QLabel(qvfFrameGauche);
-        label_4->setObjectName(QStringLiteral("label_4"));
+        labelAdresseServeur = new QLabel(qvfFrameGauche);
+        labelAdresseServeur->setObjectName(QStringLiteral("labelAdresseServeur"));
 
-        qvblFenetreSuperieur->addWidget(label_4);
+        qvblFenetreSuperieur->addWidget(labelAdresseServeur);
 
         lineEdit = new QLineEdit(qvfFrameGauche);
         lineEdit->setObjectName(QStringLiteral("lineEdit"));
@@ -121,10 +125,10 @@ public:
 
         qvblFenetreSuperieur->addWidget(boutonConnection);
 
-        label = new QLabel(qvfFrameGauche);
-        label->setObjectName(QStringLiteral("label"));
+        labelEtatConnection = new QLabel(qvfFrameGauche);
+        labelEtatConnection->setObjectName(QStringLiteral("labelEtatConnection"));
 
-        qvblFenetreSuperieur->addWidget(label);
+        qvblFenetreSuperieur->addWidget(labelEtatConnection);
 
 
         verticalLayout->addLayout(qvblFenetreSuperieur);
@@ -132,10 +136,26 @@ public:
         qvblFenetreInferieur = new QVBoxLayout();
         qvblFenetreInferieur->setSpacing(6);
         qvblFenetreInferieur->setObjectName(QStringLiteral("qvblFenetreInferieur"));
-        labelPiecesRecu = new QLabel(qvfFrameGauche);
-        labelPiecesRecu->setObjectName(QStringLiteral("labelPiecesRecu"));
+        horizontalLayout = new QHBoxLayout();
+        horizontalLayout->setSpacing(6);
+        horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
+        labelPiecesRecu1 = new QLabel(qvfFrameGauche);
+        labelPiecesRecu1->setObjectName(QStringLiteral("labelPiecesRecu1"));
 
-        qvblFenetreInferieur->addWidget(labelPiecesRecu);
+        horizontalLayout->addWidget(labelPiecesRecu1);
+
+        labelPiecesRecu2 = new QLabel(qvfFrameGauche);
+        labelPiecesRecu2->setObjectName(QStringLiteral("labelPiecesRecu2"));
+
+        horizontalLayout->addWidget(labelPiecesRecu2);
+
+        labelPiecesRecu3 = new QLabel(qvfFrameGauche);
+        labelPiecesRecu3->setObjectName(QStringLiteral("labelPiecesRecu3"));
+
+        horizontalLayout->addWidget(labelPiecesRecu3);
+
+
+        qvblFenetreInferieur->addLayout(horizontalLayout);
 
         labelScore = new QLabel(qvfFrameGauche);
         labelScore->setObjectName(QStringLiteral("labelScore"));
@@ -185,6 +205,7 @@ public:
 
         boutonDescDirect = new QPushButton(qvfFrameGauche);
         boutonDescDirect->setObjectName(QStringLiteral("boutonDescDirect"));
+        boutonDescDirect->setEnabled(false);
 
         gridLayout->addWidget(boutonDescDirect, 1, 1, 1, 1);
 
@@ -220,11 +241,13 @@ public:
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", 0));
         actionTest->setText(QApplication::translate("MainWindow", "Exit", 0));
         actionNouvelle_Partie->setText(QApplication::translate("MainWindow", "Nouvelle Partie", 0));
-        label_4->setText(QApplication::translate("MainWindow", "Adresse Du Serveur", 0));
+        labelAdresseServeur->setText(QApplication::translate("MainWindow", "Adresse Du Serveur", 0));
         lineEdit->setText(QApplication::translate("MainWindow", "localhost:8080", 0));
         boutonConnection->setText(QApplication::translate("MainWindow", "Connection", 0));
-        label->setText(QApplication::translate("MainWindow", "(Indique si le client est connecte)", 0));
-        labelPiecesRecu->setText(QString());
+        labelEtatConnection->setText(QApplication::translate("MainWindow", "(Indique si le client est connecte)", 0));
+        labelPiecesRecu1->setText(QString());
+        labelPiecesRecu2->setText(QString());
+        labelPiecesRecu3->setText(QString());
         labelScore->setText(QApplication::translate("MainWindow", "0", 0));
         boutonGauche->setText(QApplication::translate("MainWindow", "Gauche", 0));
         boutonDroite->setText(QApplication::translate("MainWindow", "Droite", 0));

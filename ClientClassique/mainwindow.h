@@ -7,6 +7,8 @@
 #include "animation.h"
 #include "fifopieces.h"
 
+class Tetromino;
+
 namespace Ui {
 class MainWindow;
 }
@@ -32,6 +34,7 @@ private:
 
     void NetoyageTotalGrille();
     void ActivationInterface(bool p_bActivation);
+    void AffichageFIFOTetromino();
 
 public slots:
 

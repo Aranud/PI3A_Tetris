@@ -1,6 +1,7 @@
 #include "tetromino.h"
 
 // Creation du tetromino constitue de 4 point represente par 4 QPoint dans une liste
+
 Tetromino::Tetromino(eTetromino p_eTetromino, QObject* parent) :
     QObject(parent)
 {
@@ -66,16 +67,13 @@ Tetromino::Tetromino(eTetromino p_eTetromino, QObject* parent) :
 
 Tetromino::~Tetromino()
 {
-
 }
-
 
 // Getter de la liste des points du tetromino
 QList<QPoint> Tetromino::getListPoint() const
 {
     return m_lpListPoint;
 }
-
 
 // Setter de la liste des points du tetromino
 void Tetromino::setListPoint(const QList<QPoint> &lpListPoint)
@@ -93,6 +91,30 @@ QColor Tetromino::getColor() const
 void Tetromino::setColor(const QColor &cColor)
 {
     m_cColor = cColor;
+}
+
+// Getter Tetromino Type
+eTetromino Tetromino::getTetriminoType() const
+{
+    return m_eTetrimino;
+}
+
+// Setter Tetromino Type
+void Tetromino::setTetriminoType(const eTetromino &eTetrimino)
+{
+    m_eTetrimino = eTetrimino;
+}
+
+// Getter Tetromino Etat
+eEtatTetromino Tetromino::getEtatTetromino() const
+{
+    return m_eEtatTetromino;
+}
+
+// Setter Tetromino Etat
+void Tetromino::setEtatTetromino(const eEtatTetromino &eEtatTetromino)
+{
+    m_eEtatTetromino = eEtatTetromino;
 }
 
 // Gestion des rotation du tetromino en fonction de sont Etat et de son type

@@ -65,6 +65,57 @@ void MainWindow::ActivationInterface(bool p_bActivation)
     ui->lineEdit->setEnabled(!p_bActivation);
 }
 
+void MainWindow::AffichageFIFOTetromino()
+{
+    int iCompteur = 1;
+    QImage imgImageTetromino;
+
+   ui->labelPiecesRecu1->clear();
+   ui->labelPiecesRecu2->clear();
+   ui->labelPiecesRecu3->clear();
+
+    foreach(Tetromino* itemTetromino, m_qFIFOTetromino->getFIFOTetromino())
+    {
+        switch(itemTetromino->getTetriminoType())
+        {
+            case eTetrominoI:
+                imgImageTetromino.load(":/icons/ICON_TETROMINO_I");
+            break;
+            case eTetrominoO:
+                imgImageTetromino.load(":/icons/ICON_TETROMINO_O");
+            break;
+            case eTetrominoT:
+                imgImageTetromino.load(":/icons/ICON_TETROMINO_T");
+            break;
+            case eTetrominoJ:
+                imgImageTetromino.load(":/icons/ICON_TETROMINO_J");
+            break;
+            case eTetrominoL:
+                imgImageTetromino.load(":/icons/ICON_TETROMINO_L");
+            break;
+            case eTetrominoS:
+                imgImageTetromino.load(":/icons/ICON_TETROMINO_S");
+            break;
+            case eTetrominoZ:
+                imgImageTetromino.load(":/icons/ICON_TETROMINO_Z");
+            break;
+            default:
+                return;
+        }
+
+        if(iCompteur == 1)
+            ui->labelPiecesRecu1->setPixmap(QPixmap::fromImage(imgImageTetromino));
+        else if(iCompteur == 2)
+            ui->labelPiecesRecu2->setPixmap(QPixmap::fromImage(imgImageTetromino));
+        else if(iCompteur == 3)
+            ui->labelPiecesRecu3->setPixmap(QPixmap::fromImage(imgImageTetromino));
+        else
+            break;
+
+        iCompteur++;
+    }
+}
+
 // Permet la gestion des connection  deconnection
 void MainWindow::on_boutonConnection_clicked()
 {
@@ -82,7 +133,7 @@ void MainWindow::on_boutonConnection_clicked()
 // Reception du signal qu'une piece est stopper
 void MainWindow::slotStopAnimation()
 {
-
+    AffichageFIFOTetromino();
 }
 
 // La partie est perdu, tout les bouttons sont desactiver
@@ -148,4 +199,6 @@ void MainWindow::slotOnWebSocketPieceReceived(QString p_sPiece, bool p_bState)
         m_qFIFOTetromino->QueueTetromino(new Tetromino(eTetrominoS));
     else if(p_sPiece == "Z")
         m_qFIFOTetromino->QueueTetromino(new Tetromino(eTetrominoZ));
+
+    AffichageFIFOTetromino();
 }

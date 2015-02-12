@@ -28,3 +28,6 @@ HEADERS  += mainwindow.h \
     fifopieces.h
 
 FORMS    += mainwindow.ui
+
+RESOURCES += \
+    ressource.qrc

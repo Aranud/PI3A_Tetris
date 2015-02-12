@@ -24,6 +24,12 @@ public:
 
     void Rotation(eActionTetromino p_eActionTetrominoRotation);
 
+    eTetromino getTetriminoType() const;
+    void setTetriminoType(const eTetromino &eTetrimino);
+
+    eEtatTetromino getEtatTetromino() const;
+    void setEtatTetromino(const eEtatTetromino &eEtatTetromino);
+
 signals:
 
 public slots:
